@@ -19,9 +19,12 @@
   },
   "homepage": "https://github.com/tumeraltunbas/MovieApp-API#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
     "mysql2": "^3.2.0",
+    "nodemailer": "^6.9.1",
     "sequelize": "^6.31.0"
   },
   "devDependencies": {

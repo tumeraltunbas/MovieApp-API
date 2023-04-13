@@ -5,6 +5,7 @@ import {sendMail} from "../helpers/mail/mailHelpers.js";
 import { validatePassword } from "../helpers/input/inputHelpers.js";
 import CustomError from "../helpers/error/CustomError.js";
 import { Op } from "sequelize";
+import bcrypt from "bcryptjs";
 
 export const signUp = expressAsyncHandler(async(req, res, next) => {
 
@@ -96,6 +97,48 @@ export const emailVerification = expressAsyncHandler(async(req, res, next) => {
     .json({
         success:true, 
         message: "Your email has been verified"
+    });
+
+});
+
+export const signIn = expressAsyncHandler(async(req, res, next) => {
+    
+    const {email, password} = req.body;
+    const {COOKIE_EXPIRES, NODE_ENV} = process.env;
+
+    if(!email || !password) {
+        return next(new CustomError(400, "Please provide an email and password"));
+    }
+    
+    const user = await User.findOne({where: {
+        email:email
+    }});
+
+    if(user.isRegisterCompleted === false || user.isEmailVerified === false) {
+        return next(new CustomError(403, "You did not verify your email."));
+    }
+
+    if(!bcrypt.compareSync(password, user.password)){
+        return next(new CustomError(400, "Check your credentials"));
+    }
+
+    if(user.blocked === false && user.isActive === false){
+        
+        user.isActive = true;
+        await user.save();
+    }
+
+    const jwt = user.createJwt();
+
+    res
+    .cookie("jwt", jwt, {
+        maxAge: COOKIE_EXPIRES,
+        httpOnly: NODE_ENV === "development" ? false : true
+    })
+    .status(200)
+    .json({
+        success:true, 
+        message: "Login successfull"
     });
 
 });

@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../helpers/database/database.js";
+import jwt from "jsonwebtoken";
 
 const User = sequelize.define("User", {
     firstName: {
@@ -73,6 +74,21 @@ const User = sequelize.define("User", {
         defaultValue: DataTypes.NOW
     }
 });
+
+
+User.prototype.createJwt = function(){
+    
+    const {JWT_SECRET_KEY, JWT_EXPIRES} = process.env;
+    
+    const payload = {
+        id: this.id,
+        email: this.email
+    };
+
+    const token = jwt.sign(payload, JWT_SECRET_KEY, {expiresIn: JWT_EXPIRES});
+    return token;
+
+}
 
 await User.sync();
 export default User;

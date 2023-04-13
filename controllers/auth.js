@@ -80,6 +80,8 @@ export const emailVerification = expressAsyncHandler(async(req, res, next) => {
 
     user.emailVerificationToken = null;
     user.emailVerificationTokenExpires = null;
+    user.isRegisterCompleted = true;
+    user.isEmailVerified = true;
 
     await user.save();
 

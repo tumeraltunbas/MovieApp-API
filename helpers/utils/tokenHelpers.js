@@ -3,8 +3,10 @@ import bcrypt from "bcryptjs";
 
 export const createToken = () => {
 
-    const randomString = crypto.randomBytes(10);
-    const token = bcrypt.hashSync(randomString);
+    const randomString = crypto.randomBytes(10).toString("hex");
+
+    const salt = bcrypt.genSaltSync();
+    const token = bcrypt.hashSync(randomString, salt);
 
     return token;
 }

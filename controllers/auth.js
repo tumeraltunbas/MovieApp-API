@@ -4,6 +4,7 @@ import { createToken } from "../helpers/utils/tokenHelpers.js";
 import {sendMail} from "../helpers/mail/mailHelpers.js";
 import { validatePassword } from "../helpers/input/inputHelpers.js";
 import CustomError from "../helpers/error/CustomError.js";
+import { Op } from "sequelize";
 
 export const signUp = expressAsyncHandler(async(req, res, next) => {
 
@@ -56,5 +57,43 @@ export const signUp = expressAsyncHandler(async(req, res, next) => {
     return res
     .status(201)
     .json({success:true, message: `Email verification token sent to ${email}`});
+
+});
+
+
+export const emailVerification = expressAsyncHandler(async(req, res, next) => {
+    
+    const {emailVerificationToken} = req.query;
+    const {COOKIE_EXPIRES, NODE_ENV} = process.env;
+
+    const user = await User.findOne({where: {
+        [Op.and] : [
+            {emailVerificationToken: emailVerificationToken}, 
+            {emailVerificationTokenExpires: {[Op.gte]: Date.now()}}
+        ]
+    }});
+    
+
+    if(!user){
+        return next(new CustomError(400, "Email verification token wrong or expired"));
+    }
+
+    user.emailVerificationToken = null;
+    user.emailVerificationTokenExpires = null;
+
+    await user.save();
+
+    const jwt = user.createJwt();
+
+    res
+    .cookie("jwt", jwt, {
+        maxAge: COOKIE_EXPIRES,
+        httpOnly: NODE_ENV === "development" ? false : true
+    })
+    .status(200)
+    .json({
+        success:true, 
+        message: "Your email has been verified"
+    });
 
 });

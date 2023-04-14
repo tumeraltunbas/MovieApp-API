@@ -182,3 +182,36 @@ export const passwordChange = expressAsyncHandler(async(req, res, next) => {
     .json({success:true, message: "Your password has been changed"});
 
 });
+
+export const forgotPassword = expressAsyncHandler(async(req, res, next) => {
+
+    const {email} = req.body;
+    const {DOMAIN, RESET_PASSWORD_TOKEN_EXPIRES, SMTP_USER} = process.env;
+
+    const user = await User.findOne({where : {
+        email: email
+    }});
+
+    const resetPasswordToken = createToken();
+    const resetPasswordLink = `${DOMAIN}/api/auth/resetPassword?resetPasswordToken=${resetPasswordToken}`;
+    
+    user.resetPasswordToken = resetPasswordToken;
+    user.resetPasswordTokenExpires = new Date(Date.now() + RESET_PASSWORD_TOKEN_EXPIRES);
+
+    await user.save();
+
+    const mailOptions = {
+        from: SMTP_USER,
+        to: email,
+        subject: "Reset Password Request",
+        html: `<h3>Your reset password <a href="${resetPasswordLink}">link</a>.</h3>`
+    };
+
+    sendMail(mailOptions);
+
+    return res
+    .status(200)
+    .json({success:true, message: `Reset password link sent to ${email}`})
+
+
+});

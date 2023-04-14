@@ -1,8 +1,10 @@
-import Staff from "./Staff";
-import Country from "./Country";
-import Movie from "./Movie";
-import Genre from "./Genre";
-import Role from "./Role";
+import Staff from "./Staff.js";
+import Country from "./Country.js";
+import Movie from "./Movie.js";
+import Genre from "./Genre.js";
+import Role from "./Role.js";
+import Review from "./Review.js";
+import User from "./User.js";
 
 // for country_id in Actor table. 
 Staff.hasOne(Country, {
@@ -21,3 +23,15 @@ Genre.belongsToMany(Movie, {through: "MovieGenres"});
 //Role and staff many to many
 Role.belongsToMany(Staff, {through: "StaffRoles"});
 Staff.belongsToMany(Role, {through: "StaffRoles"});
+
+//Review and movie one to many
+Movie.hasMany(Review, {
+    foreignKey: "movie_id"
+});
+Review.belongsTo(Movie);
+
+//Review and user one to many
+User.hasMany(Review, {
+    foreignKey: "user_id"
+});
+Review.belongsTo(User);

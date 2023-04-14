@@ -143,6 +143,13 @@ export const signIn = expressAsyncHandler(async(req, res, next) => {
 
 });
 
+export const logout = (req, res, next) => {
+    res
+    .cookie("jwt", "", {maxAge: Date.now()})
+    .status(200)
+    .json({success: true});
+}
+
 export const passwordChange = expressAsyncHandler(async(req, res, next) => {
 
     const {oldPassword, newPassword, newPasswordRepeat} = req.body;

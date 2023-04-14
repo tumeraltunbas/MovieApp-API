@@ -2,7 +2,7 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "../helpers/database/database.js";
 
 
-const Actor = sequelize.define("Actor", {
+const Staff = sequelize.define("Staff", {
 
     firstName: {
         type: DataTypes.STRING,
@@ -50,5 +50,5 @@ const Actor = sequelize.define("Actor", {
     }
 });
 
-await Actor.sync();
-export default Actor;
+await Staff.sync();
+export default Staff;

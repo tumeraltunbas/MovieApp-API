@@ -12,6 +12,7 @@ const app = express();
 app.use(express.json()); //body-parser
 app.use(cookieParser()); //cookieParser
 app.use(cors());
+app.use(express.static("public")),
 app.use("/api", routes);
 
 app.use(errorHandler);

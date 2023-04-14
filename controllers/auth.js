@@ -142,3 +142,36 @@ export const signIn = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const passwordChange = expressAsyncHandler(async(req, res, next) => {
+
+    const {oldPassword, newPassword, newPasswordRepeat} = req.body;
+
+    if(newPassword !== newPasswordRepeat){
+        return next(new CustomError(400, "Passwords does not match"));
+    }
+
+    const user = await User.findOne({where: {
+        id: req.user.id
+    }}); 
+
+    if(bcrypt.compareSync(newPassword, user.password)){
+        return next(new CustomError(400, "Old password and new password can not be same"));
+    }
+
+    if(!bcrypt.compareSync(oldPassword, user.password)){
+        return next(new CustomError(400, "Old password is invalid"));
+    }
+
+    if(!validatePassword(newPassword)){
+        return next(new CustomError(400, "Your password must contains: Minimum eight characters, at least one uppercase letter, one lowercase letter and one number."));
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    return res
+    .status(200)
+    .json({success:true, message: "Your password has been changed"});
+
+});

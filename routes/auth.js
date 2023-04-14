@@ -9,10 +9,10 @@ router.post("/signUp", signUp);
 router.get("/emailVerification", emailVerification);
 router.post("/signIn", checkUserExists, signIn);
 router.get("/logout", isAuth, logout);
-router.post("/passwordChange", isAuth, passwordChange);
-router.post("/emailChange", isAuth, emailChange);
+router.put("/passwordChange", isAuth, passwordChange);
+router.put("/emailChange", isAuth, emailChange);
 router.post("/forgotPassword", checkUserExists, forgotPassword);
-router.post("/resetPassword", resetPassword);
+router.put("/resetPassword", resetPassword);
 router.post("/deactive", isAuth, deactiveAccount);
 
 

@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/tumeraltunbas/MovieApp-API#readme",
   "dependencies": {
+    "app-root-path": "^3.1.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -26,6 +27,7 @@
     "express": "^4.18.2",
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.0",
+    "multer": "^1.4.5-lts.1",
     "mysql2": "^3.2.0",
     "nodemailer": "^6.9.1",
     "sequelize": "^6.31.0"

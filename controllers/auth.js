@@ -250,3 +250,24 @@ export const resetPassword = expressAsyncHandler(async(req, res, next) => {
     .json({success: true, message: "Your password has been changed"});
 
 });
+
+export const deactiveAccount = expressAsyncHandler(async(req, res, next) => {
+    
+    const {password} = req.body;
+
+    const user = await User.findOne({where: {
+        id: req.user.id
+    }});
+
+    if(!bcrypt.compareSync(password, user.password)){
+        return next(new CustomError(400, "Invalid password"));
+    }
+
+    user.isActive = false;
+    await user.save();
+
+    return res
+    .status(200)
+    .json({success:true, message: "Your account has been deactivated"});
+    
+});

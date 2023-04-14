@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { signUp, emailVerification, signIn, logout, passwordChange, forgotPassword, resetPassword} from "../controllers/auth.js";
+import { signUp, emailVerification, signIn, logout, passwordChange, forgotPassword, resetPassword, deactiveAccount} from "../controllers/auth.js";
 import { checkUserExists } from "../middlewares/query/databaseQueryHelpers.js";
 import { isAuth } from "../middlewares/auth/auth.js";
 
@@ -12,6 +12,7 @@ router.get("/logout", isAuth, logout);
 router.post("/passwordChange", isAuth, passwordChange);
 router.post("/forgotPassword", checkUserExists, forgotPassword);
 router.post("/resetPassword", resetPassword);
+router.post("/deactive", isAuth, deactiveAccount);
 
 
 export default router;

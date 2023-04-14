@@ -175,6 +175,7 @@ export const passwordChange = expressAsyncHandler(async(req, res, next) => {
     }
 
     user.password = newPassword;
+    user.lastPasswordChangedAt = Date.now();
     await user.save();
 
     return res
@@ -213,5 +214,39 @@ export const forgotPassword = expressAsyncHandler(async(req, res, next) => {
     .status(200)
     .json({success:true, message: `Reset password link sent to ${email}`})
 
+
+});
+
+export const resetPassword = expressAsyncHandler(async(req, res, next) => {
+    
+    const {resetPasswordToken} = req.params;
+    const {password, passwordRepeat} = req.body;
+
+    const user = await User.findOne({where: {
+        [Op.and]: [
+            {resetPasswordToken: resetPasswordToken},
+            {resetPasswordTokenExpires:  {[Op.gte]: Date.now()}}
+        ]
+    }});
+
+    if(!user){
+        return next(new CustomError(400, "Your reset password token wrong or expired"));
+    }
+
+    if(password != passwordRepeat){
+        return next(new CustomError(400, "Your passwords do not match"));
+    }
+
+    if(!validatePassword(password)){
+        return next(new CustomError(400, "Your password must contains: Minimum eight characters, at least one uppercase letter, one lowercase letter and one number."));
+    }
+
+    user.password = password;
+    user.lastPasswordChangedAt = Date.now();
+    await user.save();
+
+    return res
+    .status(200)
+    .json({success: true, message: "Your password has been changed"});
 
 });

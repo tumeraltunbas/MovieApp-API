@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../helpers/database/database.js";
 
-const Country = sequelize.define("Nation", {
+const Country = sequelize.define("Country", {
     name: {
         type: DataTypes.STRING,
         allowNull: false

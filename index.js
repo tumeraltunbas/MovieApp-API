@@ -3,11 +3,15 @@ import dotenv from "dotenv";
 import { sequelize } from "./helpers/database/database.js";
 import { errorHandler } from "./middlewares/error/errorHandler.js";
 import routes from "./routes/index.js";
+import cookieParser from "cookie-parser";
+import cors from "cors";
 
 dotenv.config({path: "./config/config.env"});
 const app = express();
 
 app.use(express.json()); //body-parser
+app.use(cookieParser()); //cookieParser
+app.use(cors());
 app.use("/api", routes);
 
 app.use(errorHandler);

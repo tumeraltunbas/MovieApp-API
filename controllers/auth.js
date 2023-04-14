@@ -184,6 +184,23 @@ export const passwordChange = expressAsyncHandler(async(req, res, next) => {
 
 });
 
+export const emailChange = expressAsyncHandler(async(req, res, next) => {
+    
+    const {email} = req.body;
+
+    const user = await User.findOne({where: {
+        id: req.user.id
+    }});
+
+    user.email = email;
+    await user.save();
+
+    return res
+    .status(201)
+    .json({success:true, message: `Email verification token sent to ${email}`});
+
+})
+
 export const forgotPassword = expressAsyncHandler(async(req, res, next) => {
 
     const {email} = req.body;
@@ -269,5 +286,5 @@ export const deactiveAccount = expressAsyncHandler(async(req, res, next) => {
     return res
     .status(200)
     .json({success:true, message: "Your account has been deactivated"});
-    
+
 });

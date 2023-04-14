@@ -1,7 +1,7 @@
 import expressAsyncHandler from "express-async-handler"
 import User from "../models/User.js";
 import { createToken } from "../helpers/utils/tokenHelpers.js";
-import {sendMail} from "../helpers/mail/mailHelpers.js";
+import {sendEmailVerificationTokenToUser, sendMail} from "../helpers/mail/mailHelpers.js";
 import { validatePassword } from "../helpers/input/inputHelpers.js";
 import CustomError from "../helpers/error/CustomError.js";
 import { Op } from "sequelize";
@@ -44,16 +44,7 @@ export const signUp = expressAsyncHandler(async(req, res, next) => {
         await newUser.save();
     }
 
-    const emailVerificationLink = `${DOMAIN}/api/auth/emailVerification?emailVerificationToken=${emailVerificationToken}`;
-
-    const mailOptions = {
-        from: SMTP_USER,
-        to: email,
-        subject: "Email Verification",
-        html: `<h3>Here is your email verification <a href="${emailVerificationLink}">link</a>. This link is only valid for 30 minutes.</h3>`
-    }
-    
-    sendMail(mailOptions);
+    sendEmailVerificationTokenToUser(email, emailVerificationToken);
 
     return res
     .status(201)
@@ -185,20 +176,41 @@ export const passwordChange = expressAsyncHandler(async(req, res, next) => {
 });
 
 export const emailChange = expressAsyncHandler(async(req, res, next) => {
+
     
     const {email} = req.body;
+    const {EMAIL_VERIFICATION_TOKEN_EXPIRES} = process.env;
 
     const user = await User.findOne({where: {
         id: req.user.id
     }});
 
+    //Is there any email like this in the db?
+    const isUserExists = await User.findOne({where: {
+        email: email
+    }});
+
+    if(isUserExists && user.email != email){
+        return next(new CustomError(400, "This email already exists in database. Each email must be unique"));
+    }
+
+    const emailVerificationToken = createToken();
+
     user.email = email;
+    user.isEmailVerified = false;
+    user.emailVerificationToken = emailVerificationToken;
+    user.emailVerificationTokenExpires = new Date(Date.now() + Number(EMAIL_VERIFICATION_TOKEN_EXPIRES));
+
     await user.save();
 
-    return res
-    .status(201)
-    .json({success:true, message: `Email verification token sent to ${email}`});
+    sendEmailVerificationTokenToUser(email, emailVerificationToken);
 
+    return res
+    .status(200)
+    .json({
+        success:true, 
+        message:`Email verification code sent to ${email}`
+    });
 })
 
 export const forgotPassword = expressAsyncHandler(async(req, res, next) => {

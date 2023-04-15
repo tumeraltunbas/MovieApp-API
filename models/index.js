@@ -35,3 +35,33 @@ User.hasMany(Review, {
     foreignKey: "user_id"
 });
 Review.belongsTo(User);
+
+//Genre and admin one to many
+User.hasMany(Genre, {
+    foreignKey: "admin_id"
+});
+Genre.belongsTo(User);
+
+//Country and admin one to many
+User.hasMany(Country, {
+    foreignKey: "admin_id"
+});
+Country.belongsTo(User);
+
+//Movie and admin one to many
+User.hasMany(Movie, {
+    foreignKey: "admin_id"
+});
+Movie.belongsTo(User);
+
+//Role and admin one to many
+User.hasMany(Role, {
+    foreignKey: "admin_id"
+});
+Role.belongsTo(User);
+
+//Staff and admin one to many
+User.hasMany(Staff, {
+    foreignKey: "admin_id"
+});
+Staff.belongsTo(User);

@@ -3,7 +3,8 @@ import { sequelize } from "../helpers/database/database.js";
 
 const Genre = sequelize.define("Genre", {
     name: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false
     },
     isVisible: {
         type: DataTypes.BOOLEAN,

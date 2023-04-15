@@ -21,10 +21,41 @@ export const createRole = expressAsyncHandler(async(req, res, next) => {
     });
 
     return res
-    .status(200)
+    .status(201)
     .json({
         success: true, 
         message: "Role has been created"
     });
+
+});
+
+export const editRole = expressAsyncHandler(async(req, res, next) => {
+    
+    const {roleId} = req.params;
+    const {roleName} = req.body;
+
+    const isRoleExist = await Role.findOne({
+        name: roleName.trim(),
+        isVisible: true
+    });
+
+    if(isRoleExist){
+        return next(new CustomError(400, "This role name is already exists"));
+    }
+
+    const role = await Role.findOne({where: {
+        id: roleId,
+        isVisible: true
+    }});
+
+    role.name = capitalize(isRoleExist.trim());
+    await role.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Role has been edited"
+    })
 
 });

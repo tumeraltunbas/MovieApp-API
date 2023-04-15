@@ -8,7 +8,7 @@ export const createGenre = expressAsyncHandler(async(req, res, next) => {
     const {genreName} = req.body;
 
     const isGenreExists = await Genre.findOne({where: {
-        name: genreName
+        name: genreName.trim()
     }});
 
     if(isGenreExists){
@@ -16,7 +16,7 @@ export const createGenre = expressAsyncHandler(async(req, res, next) => {
     }
 
     const newGenre = await Genre.create({
-        name: capitalize(genreName),
+        name: capitalize(genreName.trim()),
         admin_id: req.user.id
     });
 
@@ -36,7 +36,7 @@ export const editGenre = expressAsyncHandler(async(req, res, next) => {
     const {genreName} = req.body;
 
     const isGenreExist = await Genre.findOne({where: {
-        name: genreName
+        name: genreName.trim()
     }});
 
     if(isGenreExist){
@@ -48,7 +48,7 @@ export const editGenre = expressAsyncHandler(async(req, res, next) => {
         isVisible: true
     }});
 
-    genre.name = capitalize(genreName);
+    genre.name = capitalize(genreName.trim());
     await genre.save();
 
     return res

@@ -10,6 +10,6 @@ router.put("/:genreId", [isAuth, getAdminAccess, checkGenreExists], editGenre);
 router.put("/:genreId/delete", [isAuth, getAdminAccess, getAdminAccess], deleteGenre);
 
 router.get("/", getAllGenres);
-router.get("/:genreId", getGenreById);
+router.get("/:genreId", checkGenreExists, getGenreById);
 
 export default router;

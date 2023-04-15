@@ -44,7 +44,8 @@ export const editGenre = expressAsyncHandler(async(req, res, next) => {
     }
 
     const genre = await Genre.findOne({where: {
-        id: genreId
+        id: genreId,
+        isVisible: true
     }});
 
     genre.name = capitalize(genreName);
@@ -64,7 +65,8 @@ export const deleteGenre = expressAsyncHandler(async(req, res, next) => {
     const {genreId} = req.params;
 
     const genre = await Genre.findOne({where: {
-        id: genreId
+        id: genreId,
+        isVisible: true
     }});
 
     genre.isVisible = false;
@@ -76,5 +78,5 @@ export const deleteGenre = expressAsyncHandler(async(req, res, next) => {
         success: true,
         message: "Genre has been deleted"
     });
-    
+
 });

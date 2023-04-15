@@ -59,3 +59,24 @@ export const editRole = expressAsyncHandler(async(req, res, next) => {
     })
 
 });
+
+export const deleteRole = expressAsyncHandler(async(req, res, next) => {
+    
+    const {roleId} = req.params;
+
+    const role = await Role.findOne({
+        id: roleId,
+        isVisible: true
+    });
+
+    role.isVisible = false;
+    await role.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Role has been deleted" 
+    });
+
+});

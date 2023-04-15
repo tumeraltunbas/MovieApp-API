@@ -100,3 +100,21 @@ export const getAllGenres = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const getGenreById = expressAsyncHandler(async(req, res, next) => {
+    
+    const {genreId} = req.params;
+
+    const genre = await Genre.findOne({where: {
+        id: genreId,
+        isVisible: true
+    }});
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        genre: genre
+    });
+
+});

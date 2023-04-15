@@ -4,16 +4,20 @@ import {sequelize} from "../helpers/database/database.js";
 const Review = sequelize.define("Review", {
 
     content: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false
     },
     user_id: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
     movie_id: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
     rating: {
-        type: DataTypes.NUMBER
+        type: DataTypes.NUMBER,
+        allowNull: false
     },
     isVisible: {
         type: DataTypes.BOOLEAN,

@@ -6,6 +6,10 @@ const Genre = sequelize.define("Genre", {
         type: DataTypes.STRING,
         allowNull: false
     },
+    admin_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     isVisible: {
         type: DataTypes.BOOLEAN,
         defaultValue: true

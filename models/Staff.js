@@ -42,6 +42,10 @@ const Staff = sequelize.define("Staff", {
     role_id: {
         type: DataTypes.INTEGER,
     },
+    admin_id : {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     createdAt: {
         type: DataTypes.DATE
     },

@@ -3,11 +3,16 @@ import { sequelize } from "../helpers/database/database.js";
 
 const Role = sequelize.define("Role", {
     name: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false
     },
     isVisible: {
         type: DataTypes.BOOLEAN,
         defaultValue: true
+    },
+    admin_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
     createdAt: {
         type: DataTypes.DATE,

@@ -64,10 +64,10 @@ export const deleteRole = expressAsyncHandler(async(req, res, next) => {
     
     const {roleId} = req.params;
 
-    const role = await Role.findOne({
+    const role = await Role.findOne({where: {
         id: roleId,
         isVisible: true
-    });
+    }});
 
     role.isVisible = false;
     await role.save();
@@ -77,6 +77,26 @@ export const deleteRole = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         message: "Role has been deleted" 
+    });
+
+});
+
+export const getAllRoles = expressAsyncHandler(async(req, res, next) => {
+    
+    const roles = await Role.findAll({
+        where: {
+        isVisible: true
+        },
+        order: [
+            ["name", "ASC"]
+        ]
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        roles: roles
     });
 
 });

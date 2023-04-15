@@ -58,3 +58,23 @@ export const editGenre = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const deleteGenre = expressAsyncHandler(async(req, res, next) => {
+    
+    const {genreId} = req.params;
+
+    const genre = await Genre.findOne({where: {
+        id: genreId
+    }});
+
+    genre.isVisible = false;
+    await genre.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Genre has been deleted"
+    });
+    
+});

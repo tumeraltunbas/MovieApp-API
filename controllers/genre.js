@@ -28,3 +28,25 @@ export const createGenre = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+
+export const editGenre = expressAsyncHandler(async(req, res, next) => {
+
+    const {genreId} = req.params;
+    const {genreName} = req.body;
+
+    const genre = await Genre.findOne({where: {
+        id: genreId
+    }});
+
+    genre.name = capitalize(genreName);
+    await genre.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Genre has been updated"
+    });
+
+});

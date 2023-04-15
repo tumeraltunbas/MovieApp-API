@@ -100,3 +100,21 @@ export const getAllRoles = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+
+export const getRoleById = expressAsyncHandler(async(req, res, next) => {
+    
+    const {roleId} = req.params;
+
+    const role = await Role.findOne({where: {
+        id: roleId,
+        isVisible: true
+    }});
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        role: role
+    });
+});

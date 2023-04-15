@@ -39,7 +39,7 @@ export const checkGenreExists = expressAsyncHandler(async(req, res, next) => {
 
 export const checkRoleExists = expressAsyncHandler(async(req, res, next) => {
 
-    const {roleId} = req.body;
+    const {roleId} = req.params;
 
     const isRoleExists = await Role.findOne({where: {
         id: roleId,

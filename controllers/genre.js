@@ -80,3 +80,23 @@ export const deleteGenre = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const getAllGenres = expressAsyncHandler(async(req, res, next) => {
+    
+    const genres = await Genre.findAll({
+        where: {
+            isVisible:true
+        },
+        order: [
+            ["name", "ASC"]
+        ]
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        genres: genres
+    });
+
+});

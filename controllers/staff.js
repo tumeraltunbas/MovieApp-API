@@ -43,3 +43,28 @@ export const createStaff = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const editStaff = async(req, res, next) => {
+    
+    const {staffId} = req.params;
+    const updateInformations = req.body;
+
+    if(req.file){
+        updateInformations.image = req.file.filename;
+    }
+
+    const staff = await Staff.findOne({where: {
+        id: staffId,
+        isVisible: true
+    }});
+
+    await staff.update({...updateInformations});
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Staff has been updated"
+    });
+
+}

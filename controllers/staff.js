@@ -108,5 +108,23 @@ export const getAllStaffs = expressAsyncHandler(async(req, res, next) => {
         success: true,
         staffs: staffs
     });
-    
+
+});
+
+export const getStaffById = expressAsyncHandler(async(req, res, next) => {
+
+    const {staffId} = req.params;
+
+    const staff = await Staff.findOne({where: {
+        id: staffId,
+        isVisible: true
+    }});
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        staff: staff
+    });
+
 });

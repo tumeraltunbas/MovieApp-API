@@ -29,3 +29,25 @@ export const createCountry = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const editCountry = expressAsyncHandler(async(req, res, next) => {
+    
+    const {countryId} = req.params;
+    const {countryName} = req.body;
+
+    const country = await Country.findOne({where: {
+        id: countryId,
+        isVisible: true
+    }});
+
+    country.name = capitalize(countryName.trim());
+    await country.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Country has been updated"
+    });
+
+});

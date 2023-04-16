@@ -90,3 +90,23 @@ export const deleteStaff = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const getAllStaffs = expressAsyncHandler(async(req, res, next) => {
+
+    const staffs = await Staff.findAll({
+        where: {
+            isVisible: true
+        },
+        order: [
+            ["firstName", "ASC"]
+        ]
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        staffs: staffs
+    });
+    
+});

@@ -68,3 +68,25 @@ export const editStaff = async(req, res, next) => {
     });
 
 }
+
+export const deleteStaff = expressAsyncHandler(async(req, res, next) => {
+
+    const {staffId} = req.params;
+
+    const staff = await Staff.findOne({where: {
+        id: staffId,
+        isVisible: true
+    }});
+
+    staff.isVisible = false;
+
+    await staff.save();
+
+    return res
+    .status(200)
+    .json({
+        success: false,
+        message: "Staff has been deleted"
+    });
+
+});

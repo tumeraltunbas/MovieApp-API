@@ -4,7 +4,8 @@ import { sequelize } from "../helpers/database/database.js";
 const Country = sequelize.define("Country", {
     name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     admin_id: {
         type: DataTypes.INTEGER,

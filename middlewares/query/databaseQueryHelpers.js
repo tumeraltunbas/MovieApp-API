@@ -4,6 +4,7 @@ import Genre from "../../models/Genre.js";
 import CustomError from "../../helpers/error/CustomError.js";
 import Role from "../../models/Role.js";
 import Country from "../../models/Country.js";
+import Staff from "../../models/Staff.js";
 
 
 export const checkUserExists = expressAsyncHandler(async(req, res, next) => {
@@ -69,5 +70,23 @@ export const checkCountryExists = expressAsyncHandler(async(req, res, next) => {
     }
 
     next();
+
+});
+
+
+export const checkStaffExists = expressAsyncHandler(async(req, res, next) => {
+
+    const {staffId} = req.params;
+
+    const isStaffExist = await Staff.findOne({where: {
+        id: staffId,
+        isVisible: true
+    }});
+
+    if(!isStaffExist){
+        return next(new CustomError(404, "Staff was not found with that id"));
+    }
+
+    next()
 
 });

@@ -4,7 +4,8 @@ import { sequelize } from "../helpers/database/database.js";
 const Role = sequelize.define("Role", {
     name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     isVisible: {
         type: DataTypes.BOOLEAN,

@@ -4,7 +4,8 @@ import { sequelize } from "../helpers/database/database.js";
 const Genre = sequelize.define("Genre", {
     name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     admin_id: {
         type: DataTypes.INTEGER,

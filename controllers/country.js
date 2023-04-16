@@ -87,3 +87,21 @@ export const getAllCountries = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const getCountryById = expressAsyncHandler(async(req, res, next) => {
+
+    const {countryId} = req.params;
+
+    const country = await Country.findOne({where: {
+        id: countryId,
+        isVisible: true
+    }});
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        country: country
+    });
+
+});

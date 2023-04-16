@@ -1,5 +1,5 @@
 import {Router} from "express";
-import { createCountry, deleteCountry, editCountry, getAllCountries } from "../controllers/country.js";
+import { createCountry, deleteCountry, editCountry, getAllCountries, getCountryById } from "../controllers/country.js";
 import { getAdminAccess, isAuth } from "../middlewares/auth/auth.js";
 import { checkCountryExists } from "../middlewares/query/databaseQueryHelpers.js";
 
@@ -10,5 +10,6 @@ router.put("/:countryId", [isAuth, getAdminAccess, checkCountryExists], editCoun
 router.put("/:countryId/delete", [isAuth, getAdminAccess, checkCountryExists], deleteCountry);
 
 router.get("/", getAllCountries);
+router.get("/:countryId", checkCountryExists, getCountryById);
 
 export default router;

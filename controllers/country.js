@@ -72,3 +72,18 @@ export const deleteCountry = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const getAllCountries = expressAsyncHandler(async(req, res, next) => {
+
+    const countries = await Country.findAll({where: {
+        isVisible: true
+    }});
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        countries: countries
+    });
+
+});

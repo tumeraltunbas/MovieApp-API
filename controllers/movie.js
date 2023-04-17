@@ -66,3 +66,24 @@ export const editMovie = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const deleteMovie = expressAsyncHandler(async(req, res, next) => {
+
+    const {movieId} = req.params;
+
+    const movie = await Movie.findOne({where: {
+        id: movieId,
+        isVisible: true
+    }});
+
+    movie.isVisible = false;
+    await movie.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Movie has been deleted"
+    });
+    
+});

@@ -87,3 +87,18 @@ export const deleteMovie = expressAsyncHandler(async(req, res, next) => {
     });
     
 });
+
+export const getAllMovies = expressAsyncHandler(async(req, res, next) => {
+
+    const movies = await Movie.findAll({where: {
+        isVisible: true
+    }});
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        movies: movies
+    });
+
+});

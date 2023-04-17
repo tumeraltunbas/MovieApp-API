@@ -5,6 +5,7 @@ import CustomError from "../../helpers/error/CustomError.js";
 import Role from "../../models/Role.js";
 import Country from "../../models/Country.js";
 import Staff from "../../models/Staff.js";
+import Movie from "../../models/Movie.js";
 
 
 export const checkUserExists = expressAsyncHandler(async(req, res, next) => {
@@ -73,7 +74,6 @@ export const checkCountryExists = expressAsyncHandler(async(req, res, next) => {
 
 });
 
-
 export const checkStaffExists = expressAsyncHandler(async(req, res, next) => {
 
     const {staffId} = req.params;
@@ -89,4 +89,21 @@ export const checkStaffExists = expressAsyncHandler(async(req, res, next) => {
 
     next()
 
+});
+
+export const checkMovieExists = expressAsyncHandler(async(req, res, next) => {
+
+    const {movieId} = req.params;
+
+    const isMovieExist = await Movie.findOne({where: {
+        id: movieId,
+        isVisible: true
+    }});
+
+    if(!isMovieExist){
+        return next(new CustomError(400, "Movie was not found with that id"));
+    };
+
+    next();
+    
 });

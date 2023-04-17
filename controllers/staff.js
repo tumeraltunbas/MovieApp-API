@@ -1,6 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import Staff from "../models/Staff.js";
 import CustomError from "../helpers/error/CustomError.js";
+import Role from "../models/Role.js";
 
 
 export const createStaff = expressAsyncHandler(async(req, res, next) => {
@@ -13,7 +14,7 @@ export const createStaff = expressAsyncHandler(async(req, res, next) => {
         biography, 
         dateOfBirth, 
         dateOfDeath, 
-        country_id, 
+        country_id,
         role_id
     } = req.body;
 
@@ -21,7 +22,7 @@ export const createStaff = expressAsyncHandler(async(req, res, next) => {
         return next(new CustomError(400, "Please provide a profile image for staff"));
     }    
 
-    await Staff.create({
+    const staff = await Staff.create({
         firstName: firstName,
         middleName: middleName || null,
         lastName: lastName,
@@ -30,10 +31,11 @@ export const createStaff = expressAsyncHandler(async(req, res, next) => {
         biography: biography,
         dateOfBirth: dateOfBirth,
         dateOfDeath: dateOfDeath || null,
-        country_id: country_id,
-        role_id: role_id,
         admin_id: req.user.id
     });
+
+    await staff.addRole(role_id);
+    await staff.addCountry(country_id);
 
     return res
     .status(200)
@@ -125,6 +127,24 @@ export const getStaffById = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         staff: staff
+    });
+
+});
+
+export const getAllActors = expressAsyncHandler(async(req, res, next) => {
+
+    const actors = await Staff.findAll({
+        include: {
+            model: Role,
+            where: { name: "Actor" }
+        }
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        actors: actors
     });
 
 });

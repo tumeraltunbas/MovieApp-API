@@ -78,3 +78,21 @@ export const getAllReviews = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const getReviewById = expressAsyncHandler(async(req, res, next) => {
+
+    const {reviewId} = req.params;
+
+    const review = await Review.findOne({where: {
+        id: reviewId,
+        isVisible: true
+    }});
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        review: review
+    });
+
+});

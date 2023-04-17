@@ -109,7 +109,7 @@ export const checkMovieExists = expressAsyncHandler(async(req, res, next) => {
     
 });
 
-export const isReviewExists = expressAsyncHandler(async(req, res, next) => {
+export const checkReviewExists = expressAsyncHandler(async(req, res, next) => {
 
     const {reviewId} = req.params;
 

@@ -6,6 +6,7 @@ import Role from "../../models/Role.js";
 import Country from "../../models/Country.js";
 import Staff from "../../models/Staff.js";
 import Movie from "../../models/Movie.js";
+import Review from "../../models/Review.js";
 
 
 export const checkUserExists = expressAsyncHandler(async(req, res, next) => {
@@ -106,4 +107,20 @@ export const checkMovieExists = expressAsyncHandler(async(req, res, next) => {
 
     next();
     
+});
+
+export const isReviewExists = expressAsyncHandler(async(req, res, next) => {
+
+    const {reviewId} = req.params;
+
+    const isReviewExist = await Review.findOne({where: {
+        id: reviewId
+    }});
+
+    if(!isReviewExist){
+        return next(new CustomError(400, "Review was not found with that id"));
+    };
+
+    next();
+
 });

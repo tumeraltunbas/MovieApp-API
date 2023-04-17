@@ -109,13 +109,19 @@ export const checkMovieExists = expressAsyncHandler(async(req, res, next) => {
     
 });
 
-export const checkReviewExists = expressAsyncHandler(async(req, res, next) => {
+export const checkReviewExistsInMovie = expressAsyncHandler(async(req, res, next) => {
 
-    const {reviewId} = req.params;
+    const {movieId, reviewId} = req.params;
 
-    const isReviewExist = await Review.findOne({where: {
-        id: reviewId
-    }});
+    const isReviewExist = await Review.findOne({
+        where: {
+            id: reviewId
+        }, 
+        include: {
+            model: Movie,
+            where: { id: movieId }
+        }
+    });
 
     if(!isReviewExist){
         return next(new CustomError(400, "Review was not found with that id"));

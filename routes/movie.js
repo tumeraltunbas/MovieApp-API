@@ -3,6 +3,7 @@ import { getAdminAccess, isAuth } from "../middlewares/auth/auth.js";
 import upload from "../helpers/multer/multer.js";
 import { createMovie, editMovie, deleteMovie, getAllMovies, getMovieById, getMoviesByGenreId, getMoviesByStaffId } from "../controllers/movie.js";
 import {checkGenreExists, checkMovieExists, checkStaffExists} from "../middlewares/query/databaseQueryHelpers.js";
+import reviewRoutes from "./review.js";
 
 const router = Router();
 
@@ -15,6 +16,7 @@ router.get("/:movieId", checkMovieExists, getMovieById);
 router.get("/genre/:genreId", checkGenreExists, getMoviesByGenreId);
 router.get("/staff/:staffId", checkStaffExists, getMoviesByStaffId);
 
+router.use("/:movieId/review", reviewRoutes);
 
 
 export default router;

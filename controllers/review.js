@@ -63,3 +63,18 @@ export const deleteReview = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const getAllReviews = expressAsyncHandler(async(req, res, next) => {
+
+    const reviews = await Review.findAll({where: {
+        isVisible: true
+    }});
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        reviews: reviews
+    });
+
+});

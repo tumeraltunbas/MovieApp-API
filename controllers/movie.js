@@ -41,3 +41,28 @@ export const createMovie = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const editMovie = expressAsyncHandler(async(req, res, next) => {
+
+    const updateInformations = req.body;
+    const {movieId} = req.params;
+
+    if(req.file){
+        updateInformations.file = req.file.filename;
+    }
+
+    const movie = await Movie.findOne({where: {
+        id: movieId,
+        isVisible: true
+    }});
+
+    await movie.update({...updateInformations});
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Movie has been updated"
+    });
+
+});

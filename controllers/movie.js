@@ -3,6 +3,7 @@ import Movie from "../models/Movie.js";
 import {capitalize} from "../helpers/input/inputHelpers.js";
 import CustomError from "../helpers/error/CustomError.js";
 import Genre from "../models/Genre.js";
+import Staff from "../models/Staff.js";
 
 export const createMovie = expressAsyncHandler(async(req, res, next) => {
 
@@ -134,6 +135,29 @@ export const getMoviesByGenreId = expressAsyncHandler(async(req, res, next) => {
         include: {
             model: Genre,
             where: { id: genreId }
+        }
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        movies: movies
+    });
+
+});
+
+export const getMoviesByStaffId = expressAsyncHandler(async(req,res, next) => {
+
+    const {staffId} = req.params;
+
+    const movies = await Movie.findAll({
+        where: {
+            isVisible: true
+        },
+        include: {
+            model: Staff,
+            where: { id: staffId }
         }
     });
 

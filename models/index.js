@@ -1,34 +1,27 @@
+import { sequelize } from "../helpers/database/database.js";
 import Staff from "./Staff.js";
 import Country from "./Country.js";
 import Movie from "./Movie.js";
 import Genre from "./Genre.js";
 import Role from "./Role.js";
-import Review from "./Review.js";
 import User from "./User.js";
+import Review from "./Review.js";
 
-// for country_id in Actor table. 
-Staff.hasOne(Country, {
-    foreignKey: "country_id"
-});
-Country.belongsTo(Staff);
+//Staff and role many to many
+Staff.belongsToMany(Role, { through: "StaffRoles" });
+Role.belongsToMany(Staff, { through: "StaffRoles" });
 
-// Movie and Actor many to many
-Movie.belongsToMany(Staff, {through: "ActorMovies"});
-Staff.belongsToMany(Movie, {through: "ActorMovies"});
+//Staff and country many to many
+Staff.belongsToMany(Country, { through: "StaffCountries" });
+Country.belongsToMany(Staff, { through: "StaffCountries" });
 
-//Genre and movies many to many
-Movie.belongsToMany(Genre, {through: "MovieGenres"});
-Genre.belongsToMany(Movie, {through: "MovieGenres"});
+//Movie and Staff many to many
+Movie.belongsToMany(Staff, { through: "MovieStaff" });
+Staff.belongsToMany(Movie, { through: "MovieStaff" });
 
-//Role and staff many to many
-Role.belongsToMany(Staff, {through: "StaffRoles"});
-Staff.belongsToMany(Role, {through: "StaffRoles"});
-
-//Review and movie one to many
-Movie.hasMany(Review, {
-    foreignKey: "movie_id"
-});
-Review.belongsTo(Movie);
+//Movie and genre many to many
+Movie.belongsToMany(Genre, { through: "MovieGenres" });
+Genre.belongsToMany(Movie, { through: "MovieGenres" });
 
 //Review and user one to many
 User.hasMany(Review, {
@@ -36,23 +29,17 @@ User.hasMany(Review, {
 });
 Review.belongsTo(User);
 
-//Genre and admin one to many
-User.hasMany(Genre, {
-    foreignKey: "admin_id"
+//Review and Movie one to many
+Movie.hasMany(Review, {
+    foreignKey: "movie_id"
 });
-Genre.belongsTo(User);
+Review.belongsTo(Movie);
 
-//Country and admin one to many
-User.hasMany(Country, {
+//Staff and admin one to many
+User.hasMany(Staff, {
     foreignKey: "admin_id"
 });
-Country.belongsTo(User);
-
-//Movie and admin one to many
-User.hasMany(Movie, {
-    foreignKey: "admin_id"
-});
-Movie.belongsTo(User);
+Staff.belongsTo(User);
 
 //Role and admin one to many
 User.hasMany(Role, {
@@ -60,8 +47,23 @@ User.hasMany(Role, {
 });
 Role.belongsTo(User);
 
-//Staff and admin one to many
-User.hasMany(Staff, {
+//Movie and admin one to many
+User.hasMany(Movie, {
     foreignKey: "admin_id"
 });
-Staff.belongsTo(User);
+Movie.belongsTo(User);
+
+//Country and admin one to many
+User.hasMany(Country, {
+    foreignKey: "admin_id"
+});
+Country.belongsTo(User);
+
+//Genre and admin one to many
+User.hasMany(Genre, {
+    foreignKey: "admin_id"
+});
+Genre.belongsTo(User);
+
+await sequelize.sync();
+export {Staff, Role, Country};

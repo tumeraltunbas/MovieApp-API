@@ -102,3 +102,21 @@ export const getAllMovies = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const getMovieById = expressAsyncHandler(async(req, res, next) => {
+
+    const {movieId} = req.params;
+
+    const movie = await Movie.findOne({where: {
+        id: movieId,
+        isVisible: true
+    }});
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        movie: movie
+    });
+
+});

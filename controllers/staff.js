@@ -2,6 +2,7 @@ import expressAsyncHandler from "express-async-handler";
 import Staff from "../models/Staff.js";
 import CustomError from "../helpers/error/CustomError.js";
 import Role from "../models/Role.js";
+import Country from "../models/Country.js";
 
 
 export const createStaff = expressAsyncHandler(async(req, res, next) => {
@@ -145,6 +146,29 @@ export const getAllActors = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         actors: actors
+    });
+
+});
+
+export const getStaffsByCountryId = expressAsyncHandler(async(req, res, next) => {
+
+    const {countryId} = req.params;
+
+    const staffs = await Staff.findAll({
+        where: {
+            isVisible: true
+        },
+        include: {
+            model: Country,
+            where: { id: countryId}
+        }
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        staffs: staffs
     });
 
 });

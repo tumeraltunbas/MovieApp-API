@@ -1,8 +1,8 @@
 import {Router} from "express";
 import {isAuth, getAdminAccess} from "../middlewares/auth/auth.js";
 import upload from "../helpers/multer/multer.js";
-import { createStaff, editStaff, deleteStaff, getAllStaffs, getStaffById, getAllActors } from "../controllers/staff.js";
-import { checkStaffExists } from "../middlewares/query/databaseQueryHelpers.js";
+import { createStaff, editStaff, deleteStaff, getAllStaffs, getStaffById, getAllActors, getStaffsByCountryId } from "../controllers/staff.js";
+import { checkCountryExists, checkStaffExists } from "../middlewares/query/databaseQueryHelpers.js";
 
 const router = Router();
 
@@ -13,5 +13,6 @@ router.put("/:staffId/delete", [isAuth, getAdminAccess, checkStaffExists], delet
 router.get("/", getAllStaffs);
 router.get("/actors", getAllActors);
 router.get("/:staffId", checkStaffExists, getStaffById);
+router.get("/country/:countryId", checkCountryExists,getStaffsByCountryId);
 
 export default router;

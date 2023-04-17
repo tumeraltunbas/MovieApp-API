@@ -43,7 +43,8 @@ export const getReviewOwnerAccess = expressAsyncHandler(async(req, res, next) =>
     const {reviewId} = req.params;
 
     const review = await Review.findOne({where: {
-        id: reviewId
+        id: reviewId,
+        isVisible: true
     }});
 
     if(review.user_id != req.user.id){

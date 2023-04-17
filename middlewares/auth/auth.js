@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import expressAsyncHandler from "express-async-handler";
 import User from "../../models/User.js";
 import CustomError from "../../helpers/error/CustomError.js";
+import Review from "../../models/Review.js";
 
 export const isAuth = (req, res, next) => {
 
@@ -35,4 +36,20 @@ export const getAdminAccess = expressAsyncHandler(async(req, res, next) => {
     }
 
     next();
+});
+
+export const getReviewOwnerAccess = expressAsyncHandler(async(req, res, next) => {
+
+    const {reviewId} = req.params;
+
+    const review = await Review.findOne({where: {
+        id: reviewId
+    }});
+
+    if(review.user_id != req.user.id){
+        return next(new CustomError(403, "You are not owner of this review"));
+    }
+
+    next();
+    
 });

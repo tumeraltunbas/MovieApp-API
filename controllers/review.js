@@ -1,5 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
 import Review from "../models/Review.js";
+import Movie from "../models/Movie.js";
 
 export const createReview = expressAsyncHandler(async(req, res, next) => {
 
@@ -64,11 +65,20 @@ export const deleteReview = expressAsyncHandler(async(req, res, next) => {
 
 });
 
-export const getAllReviews = expressAsyncHandler(async(req, res, next) => {
+export const getReviewsByMovieId = expressAsyncHandler(async(req, res, next) => {
 
-    const reviews = await Review.findAll({where: {
-        isVisible: true
-    }});
+    const {movieId} = req.params;
+
+    const reviews = await Review.findAll({
+        where: {
+            isVisible: true,
+        },
+        include: {
+            model: Movie,
+            where: { id: movieId }    
+        }
+        
+    });
 
     return res
     .status(200)

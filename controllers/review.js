@@ -42,3 +42,24 @@ export const editReview = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const deleteReview = expressAsyncHandler(async(req, res, next) => {
+
+    const {reviewId} = req.params;
+
+    const review = await Review.findOne({where: {
+        id: reviewId,
+        isVisible: true
+    }});
+
+    review.isVisible = false;
+    await review.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Review has been deleted"
+    });
+
+});

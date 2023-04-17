@@ -114,45 +114,6 @@ export const getAllStaffs = expressAsyncHandler(async(req, res, next) => {
 
 });
 
-export const getAllActors = expressAsyncHandler(async(req, res, next) => {
-
-    const actors = await Staff.findAll({
-        include: {
-            model: Role,
-            where: { name: "Actor" }
-        }
-    });
-
-    return res
-    .status(200)
-    .json({
-        success: true,
-        actors: actors
-    });
-
-});
-
-export const getAllDirectors = expressAsyncHandler(async(req, res, next) => {
-
-    const directors = await Staff.findAll({
-        where: {
-            isVisible: true,
-        },
-        include: {
-            model: Role,
-            where: { name: "Director" }
-        }
-    });
-
-    return res
-    .status(200)
-    .json({
-        success: true,
-        directors: directors
-    });
-
-});
-
 export const getStaffById = expressAsyncHandler(async(req, res, next) => {
 
     const {staffId} = req.params;
@@ -167,6 +128,24 @@ export const getStaffById = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         staff: staff
+    });
+
+});
+
+export const getAllActors = expressAsyncHandler(async(req, res, next) => {
+
+    const actors = await Staff.findAll({
+        include: {
+            model: Role,
+            where: { name: "Actor" }
+        }
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        actors: actors
     });
 
 });

@@ -12,17 +12,20 @@ const Movie = sequelize.define("Movie", {
         allowNull: false
     },
     releaseDate: {
-        type: DataTypes.DATEONLY
+        type: DataTypes.DATEONLY,
+        allowNull: true
     },
     duration: {
-        type: DataTypes.TIME
+        type: DataTypes.TIME,
+        allowNull: true
     },
     moviePoster: {
         type: DataTypes.STRING,
         allowNull: false
     },
     rating: {
-        type: DataTypes.NUMBER
+        type: DataTypes.INTEGER,
+        allowNull: true
     },
     admin_id: {
         type: DataTypes.INTEGER,
@@ -35,7 +38,7 @@ const Movie = sequelize.define("Movie", {
     createdAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
-    }
+    },
 });
 
 

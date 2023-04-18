@@ -124,7 +124,7 @@ export const signIn = expressAsyncHandler(async(req, res, next) => {
         return next(new CustomError(400, "Check your credentials"));
     }
 
-    if(user.blocked === false && user.isActive === false){
+    if(user.isBlocked === false && user.isActive === false){
         
         user.isActive = true;
         await user.save();

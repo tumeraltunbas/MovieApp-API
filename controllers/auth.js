@@ -212,31 +212,17 @@ export const emailChange = expressAsyncHandler(async(req, res, next) => {
 
     
     const {email} = req.body;
-    const {EMAIL_VERIFICATION_TOKEN_EXPIRES} = process.env;
 
     const user = await User.findOne({where: {
         id: req.user.id
     }});
 
-    //Is there any email like this in the db?
-    const isUserExists = await User.findOne({where: {
-        email: email
-    }});
-
-    if(isUserExists && user.email != email){
-        return next(new CustomError(400, "This email already exists in database. Each email must be unique"));
-    }
-
-    const emailVerificationToken = createToken();
-
     user.email = email;
     user.isEmailVerified = false;
-    user.emailVerificationToken = emailVerificationToken;
-    user.emailVerificationTokenExpires = new Date(Date.now() + Number(EMAIL_VERIFICATION_TOKEN_EXPIRES));
 
     await user.save();
 
-    sendEmailVerificationTokenToUser(email, emailVerificationToken);
+    sendEmailVerificationLinkToUser(user);
 
     return res
     .status(200)
@@ -244,6 +230,7 @@ export const emailChange = expressAsyncHandler(async(req, res, next) => {
         success:true, 
         message:`Email verification code sent to ${email}`
     });
+
 })
 
 export const forgotPassword = expressAsyncHandler(async(req, res, next) => {

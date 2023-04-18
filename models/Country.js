@@ -7,7 +7,7 @@ const Country = sequelize.define("Country", {
         allowNull: false,
         unique: true
     },
-    admin_id: {
+    UserId: {
         type: DataTypes.INTEGER,
         allowNull: false
     },

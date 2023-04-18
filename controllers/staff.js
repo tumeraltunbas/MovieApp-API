@@ -32,7 +32,7 @@ export const createStaff = expressAsyncHandler(async(req, res, next) => {
         biography: biography,
         dateOfBirth: dateOfBirth,
         dateOfDeath: dateOfDeath || null,
-        admin_id: req.user.id
+        UserId: req.user.id
     });
 
     await staff.addRole(role_id);

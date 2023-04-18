@@ -10,8 +10,8 @@ export const createReview = expressAsyncHandler(async(req, res, next) => {
     await Review.create({
         content: content,
         rating: rating,
-        movie_id: movieId,
-        user_id: req.user.id        
+        MovieId: movieId,
+        UserId: req.user.id        
     });
 
     return res

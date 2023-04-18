@@ -27,7 +27,7 @@ const Movie = sequelize.define("Movie", {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    admin_id: {
+    UserId: {
         type: DataTypes.INTEGER,
         allowNull: false
     },

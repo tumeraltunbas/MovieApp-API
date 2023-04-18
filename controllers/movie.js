@@ -30,7 +30,7 @@ export const createMovie = expressAsyncHandler(async(req, res, next) => {
         moviePoster: req.file.filename,
         releaseDate: releaseDate || null,
         duration: duration || null,
-        admin_id: req.user.id
+        UserId: req.user.id
     });
 
     await movie.addStaff(staff_id);

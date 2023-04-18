@@ -2,6 +2,7 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "../helpers/database/database.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import Review from "./Review.js";
 
 const User = sequelize.define("User", {
     firstName: {
@@ -101,6 +102,21 @@ User.addHook("beforeSave", (user) => {
         user.password = hash;
     }
 });
+
+User.addHook("beforeSave", async function(user){
+
+    if(user.changed("isActive")){
+
+        const reviews = await Review.findAll({
+            where: {
+                user_id: user.id
+            }
+        });
+
+        console.log(reviews);
+
+    }
+}),
 
 await User.sync();
 export default User;

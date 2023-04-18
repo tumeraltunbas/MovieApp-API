@@ -9,7 +9,7 @@ export const createGenre = expressAsyncHandler(async(req, res, next) => {
 
     const newGenre = await Genre.create({
         name: capitalize(genreName.trim()),
-        admin_id: req.user.id
+        UserId: req.user.id
     });
 
     return res
@@ -26,14 +26,6 @@ export const editGenre = expressAsyncHandler(async(req, res, next) => {
 
     const {genreId} = req.params;
     const {genreName} = req.body;
-
-    const isGenreExist = await Genre.findOne({where: {
-        name: genreName.trim()
-    }});
-
-    if(isGenreExist){
-        return next(new CustomError(400, "This genre name is already exists"));
-    }
 
     const genre = await Genre.findOne({where: {
         id: genreId,

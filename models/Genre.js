@@ -7,7 +7,7 @@ const Genre = sequelize.define("Genre", {
         allowNull: false,
         unique: true
     },
-    admin_id: {
+    UserId: {
         type: DataTypes.INTEGER,
         allowNull: false
     },

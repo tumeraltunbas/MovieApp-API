@@ -36,7 +36,7 @@ const Staff = sequelize.define("Staff", {
         type: DataTypes.DATEONLY,
         allowNull: true
     },
-    admin_id : {
+    UserId : {
         type: DataTypes.INTEGER,
         allowNull: false
     },

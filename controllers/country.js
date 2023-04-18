@@ -7,25 +7,16 @@ export const createCountry = expressAsyncHandler(async(req, res, next) => {
 
     const {countryName} = req.body;
 
-    const isCountryExist = await Country.findOne({where: {
-        name: countryName.trim(),
-        isVisible: true
-    }});
-
-    if(isCountryExist){
-        return next(new CustomError(400, "This country already exists in database"));
-    }
-
-    const newCountry = await Country.create({
+    const country = await Country.create({
         name: capitalize(countryName.trim()),
-        admin_id: req.user.id
+        UserId: req.user.id
     });
 
     return res
     .status(201)
     .json({
         success: true, 
-        message: `${newCountry.name} has been created`
+        message: `${country.name} has been created`
     });
 
 });
@@ -39,7 +30,7 @@ export const editCountry = expressAsyncHandler(async(req, res, next) => {
         id: countryId,
         isVisible: true
     }});
-
+    
     country.name = capitalize(countryName.trim());
     await country.save();
 

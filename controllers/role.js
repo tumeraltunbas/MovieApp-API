@@ -1,6 +1,5 @@
 import expressAsyncHandler from "express-async-handler";
 import Role from "../models/Role.js";
-import CustomError from "../helpers/error/CustomError.js";
 import { capitalize } from "../helpers/input/inputHelpers.js";
 
 export const createRole = expressAsyncHandler(async(req, res, next) => {
@@ -9,7 +8,7 @@ export const createRole = expressAsyncHandler(async(req, res, next) => {
 
     await Role.create({
         name: capitalize(roleName.trim()),
-        admin_id: req.user.id
+        UserId: req.user.id
     });
 
     return res
@@ -26,21 +25,12 @@ export const editRole = expressAsyncHandler(async(req, res, next) => {
     const {roleId} = req.params;
     const {roleName} = req.body;
 
-    const isRoleExist = await Role.findOne({
-        name: roleName.trim(),
-        isVisible: true
-    });
-
-    if(isRoleExist){
-        return next(new CustomError(400, "This role name is already exists"));
-    }
-
     const role = await Role.findOne({where: {
         id: roleId,
         isVisible: true
     }});
 
-    role.name = capitalize(isRoleExist.trim());
+    role.name = capitalize(roleName.trim());
     await role.save();
 
     return res

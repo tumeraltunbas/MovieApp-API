@@ -11,7 +11,7 @@ const Role = sequelize.define("Role", {
         type: DataTypes.BOOLEAN,
         defaultValue: true
     },
-    admin_id: {
+    UserId: {
         type: DataTypes.INTEGER,
         allowNull: false
     },

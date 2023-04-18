@@ -25,45 +25,59 @@ Genre.belongsToMany(Movie, { through: "MovieGenres" });
 
 //Review and user one to many
 User.hasMany(Review, {
-    foreignKey: "user_id"
+    as: "reviews"
 });
-Review.belongsTo(User);
+Review.belongsTo(User, {
+    foreignKey: "UserId"
+});
 
 //Review and Movie one to many
 Movie.hasMany(Review, {
-    foreignKey: "movie_id"
+    as: "reviews"
 });
-Review.belongsTo(Movie);
+Review.belongsTo(Movie, {
+    foreignKey: "MovieId"
+});
 
 //Staff and admin one to many
 User.hasMany(Staff, {
-    foreignKey: "admin_id"
+    as: "staffs"
 });
-Staff.belongsTo(User);
+Staff.belongsTo(User, {
+    foreignKey: "UserId"
+});
 
 //Role and admin one to many
 User.hasMany(Role, {
-    foreignKey: "admin_id"
+    as: "roles"
 });
-Role.belongsTo(User);
+Role.belongsTo(User, {
+    foreignKey: "UserId"
+});
 
 //Movie and admin one to many
 User.hasMany(Movie, {
-    foreignKey: "admin_id"
+    as: "movies"
 });
-Movie.belongsTo(User);
+Movie.belongsTo(User, {
+    foreignKey: "UserId"
+});
 
 //Country and admin one to many
 User.hasMany(Country, {
-    foreignKey: "admin_id"
+    as: "countries"
 });
-Country.belongsTo(User);
+Country.belongsTo(User, {
+    foreignKey: "UserId"
+});
 
 //Genre and admin one to many
 User.hasMany(Genre, {
-    foreignKey: "admin_id"
+    as: "genres"
 });
-Genre.belongsTo(User);
+Genre.belongsTo(User, {
+    foreignKey: "UserId"
+});
 
 await sequelize.sync();
 export {Staff, Role, Country};

@@ -105,18 +105,34 @@ User.addHook("beforeSave", (user) => {
 
 User.addHook("beforeSave", async function(user){
 
+    if(user.changed("isBlocked")){
+
+        //Review updates
+        await Review.update(
+            {isVisible: false},
+            {where: {UserId: user.id}}
+        );
+        
+    }
+
+}),
+
+User.addHook("beforeSave", async function(user){
+
     if(user.changed("isActive")){
 
-        const reviews = await Review.findAll({
-            where: {
-                user_id: user.id
-            }
-        });
-
-        console.log(reviews);
-
+        if(user.isBlocked === false){
+           
+            await Review.update(
+                {isVisible: user.isActive},
+                {where: {
+                    UserId: user.id
+                }}
+            );
+        }
     }
-}),
+
+});
 
 await User.sync();
 export default User;

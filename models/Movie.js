@@ -24,7 +24,7 @@ const Movie = sequelize.define("Movie", {
         allowNull: false
     },
     rating: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.FLOAT,
         allowNull: true
     },
     UserId: {

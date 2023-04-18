@@ -1,7 +1,7 @@
 import expressAsyncHandler from "express-async-handler"
 import User from "../models/User.js";
 import { createToken } from "../helpers/utils/tokenHelpers.js";
-import {sendEmailVerificationTokenToUser, sendMail} from "../helpers/mail/mailHelpers.js";
+import {sendEmailVerificationLinkToUser, sendMail} from "../helpers/mail/mailHelpers.js";
 import { validatePassword } from "../helpers/input/inputHelpers.js";
 import CustomError from "../helpers/error/CustomError.js";
 import { Op } from "sequelize";
@@ -9,42 +9,72 @@ import bcrypt from "bcryptjs";
 
 export const signUp = expressAsyncHandler(async(req, res, next) => {
 
+    // const {firstName, lastName, email, password} = req.body;
+    // const {EMAIL_VERIFICATION_TOKEN_EXPIRES, SMTP_USER, DOMAIN} = process.env;
+
+    // const existingUser = await User.findOne({where: {
+    //     email: email
+    // }});
+
+    // const emailVerificationToken = createToken();
+
+    // if(existingUser && existingUser.isRegisterCompleted != true) {
+
+    //     existingUser.emailVerificationToken = emailVerificationToken;
+    //     existingUser.emailVerificationTokenExpires = new Date(Date.now() + Number(EMAIL_VERIFICATION_TOKEN_EXPIRES));
+
+    //     await existingUser.save();
+    // }
+    // else{
+
+    //     const newUser = await User.create({
+    //         firstName: firstName, 
+    //         lastName:lastName,
+    //         email:email,
+    //         password: password
+    //     });
+        
+    //     if(!validatePassword(password)){
+    //         return next(new CustomError(400, "Your password must contains: Minimum eight characters, at least one uppercase letter, one lowercase letter and one number."));
+    //     }
+
+    //     newUser.emailVerificationToken = emailVerificationToken;
+    //     newUser.emailVerificationTokenExpires = new Date(Date.now() + Number(EMAIL_VERIFICATION_TOKEN_EXPIRES));
+    
+    //     await newUser.save();
+    // }
+
+    // sendEmailVerificationTokenToUser(email, emailVerificationToken);
+
     const {firstName, lastName, email, password} = req.body;
-    const {EMAIL_VERIFICATION_TOKEN_EXPIRES, SMTP_USER, DOMAIN} = process.env;
 
-    const existingUser = await User.findOne({where: {
-        email: email
-    }});
+    const existingUser = await User.findOne({
+        where: {
+            email:email
+        }
+    });
 
-    const emailVerificationToken = createToken();
+    if(existingUser && existingUser.isRegisterCompleted != true){
 
-    if(existingUser && existingUser.isRegisterCompleted != true) {
-
-        existingUser.emailVerificationToken = emailVerificationToken;
-        existingUser.emailVerificationTokenExpires = new Date(Date.now() + Number(EMAIL_VERIFICATION_TOKEN_EXPIRES));
-
-        await existingUser.save();
+        sendEmailVerificationLinkToUser(existingUser);
     }
     else{
+
+        if(!validatePassword(password)){
+            
+            return next(new CustomError(400, "Your password must contains: Minimum eight characters, at least one uppercase letter, one lowercase letter and one number."));
+        }
 
         const newUser = await User.create({
             firstName: firstName, 
             lastName:lastName,
             email:email,
             password: password
-        });
-        
-        if(!validatePassword(password)){
-            return next(new CustomError(400, "Your password must contains: Minimum eight characters, at least one uppercase letter, one lowercase letter and one number."));
-        }
+        }); 
 
-        newUser.emailVerificationToken = emailVerificationToken;
-        newUser.emailVerificationTokenExpires = new Date(Date.now() + Number(EMAIL_VERIFICATION_TOKEN_EXPIRES));
-    
-        await newUser.save();
+        sendEmailVerificationLinkToUser(newUser);
+
     }
-
-    sendEmailVerificationTokenToUser(email, emailVerificationToken);
 
     return res
     .status(201)
@@ -107,15 +137,7 @@ export const signIn = expressAsyncHandler(async(req, res, next) => {
 
     if(user.isRegisterCompleted === false || user.isEmailVerified === false) {
 
-        const { EMAIL_VERIFICATION_TOKEN_EXPIRES } = process.env;
-
-        const emailVerificationToken = createToken();
-        sendEmailVerificationTokenToUser(email, emailVerificationToken);
-
-        user.emailVerificationToken = emailVerificationToken;
-        user.emailVerificationTokenExpires = new Date(Date.now() + Number(EMAIL_VERIFICATION_TOKEN_EXPIRES));
-
-        await user.save();
+       sendEmailVerificationLinkToUser(user);
 
         return next(new CustomError(403, "You did not verify your email."));
     }

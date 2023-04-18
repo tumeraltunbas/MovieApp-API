@@ -5,6 +5,7 @@ import routes from "./routes/index.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import "./models/index.js";
+import helmet from "helmet";
 
 dotenv.config({path: "./config/config.env"});
 const app = express();
@@ -12,6 +13,7 @@ const app = express();
 app.use(express.json()); //body-parser
 app.use(cookieParser()); //cookieParser
 app.use(cors());
+app.use(helmet());
 app.use(express.static("public")),
 app.use("/api", routes);
 

@@ -106,6 +106,17 @@ export const signIn = expressAsyncHandler(async(req, res, next) => {
     }});
 
     if(user.isRegisterCompleted === false || user.isEmailVerified === false) {
+
+        const { EMAIL_VERIFICATION_TOKEN_EXPIRES } = process.env;
+
+        const emailVerificationToken = createToken();
+        sendEmailVerificationTokenToUser(email, emailVerificationToken);
+
+        user.emailVerificationToken = emailVerificationToken;
+        user.emailVerificationTokenExpires = new Date(Date.now() + Number(EMAIL_VERIFICATION_TOKEN_EXPIRES));
+
+        await user.save();
+
         return next(new CustomError(403, "You did not verify your email."));
     }
 

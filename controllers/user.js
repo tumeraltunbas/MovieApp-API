@@ -51,3 +51,24 @@ export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const deleteProfileImage = expressAsyncHandler(async(req, res, next) => {
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        }
+    });
+
+    user.profileImage = "default_pp.jpg";
+
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Profile image has been deleted"
+    });
+
+});

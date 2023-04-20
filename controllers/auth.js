@@ -11,6 +11,10 @@ export const signUp = expressAsyncHandler(async(req, res, next) => {g
 
     const {firstName, lastName, email, password} = req.body;
 
+    if(!password || password == ""){
+        return next(new CustomError(400, "Please provide a password"));
+    }
+
     const existingUser = await User.findOne({
         where: {
             email:email

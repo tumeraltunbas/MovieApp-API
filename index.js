@@ -6,7 +6,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import "./models/index.js";
 import helmet from "helmet";
-import rateLimit from 'express-rate-limit'
+import rateLimit from 'express-rate-limit';
+import session from "express-session";
 
 dotenv.config({path: "./config/config.env"});
 const app = express();
@@ -17,6 +18,11 @@ app.use(cors());
 app.use(rateLimit({
     windowMs: 10 * 60 * 1000,
     max: 100
+}));
+app.use(session({
+    secret: process.env.SESSION_SECRET_KEY,
+    resave: false,
+    saveUninitialized: true
 }));
 app.use(helmet());
 app.use(express.static("public")),

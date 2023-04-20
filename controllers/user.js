@@ -3,7 +3,9 @@ import User from "../models/User.js";
 
 export const getProfile = expressAsyncHandler(async(req, res, next) => {
     
-    const user = await User.findByPk(req.user.id);
+    const user = await User.findByPk(req.user.id, {
+        attributes: ["id", "googleId", "firstName", "lastName", "email", "profileImage"]
+    });
 
     return res
     .status(200)

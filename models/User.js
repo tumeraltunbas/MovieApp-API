@@ -5,6 +5,10 @@ import bcrypt from "bcryptjs";
 import Review from "./Review.js";
 
 const User = sequelize.define("User", {
+    googleId: {
+        type: String,
+        defaultValue: null   
+    },
     firstName: {
         type: DataTypes.STRING,
         allowNull: false
@@ -25,7 +29,6 @@ const User = sequelize.define("User", {
     },
     password: {
         type: DataTypes.STRING,
-        allowNull: false
     },
     profileImage: {
         type: DataTypes.STRING,

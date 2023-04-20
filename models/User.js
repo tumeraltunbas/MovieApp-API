@@ -6,7 +6,7 @@ import Review from "./Review.js";
 
 const User = sequelize.define("User", {
     googleId: {
-        type: String,
+        type: DataTypes.STRING,
         defaultValue: null   
     },
     firstName: {

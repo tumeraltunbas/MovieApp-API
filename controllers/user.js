@@ -1,6 +1,21 @@
 import expressAsyncHandler from "express-async-handler";
 import User from "../models/User.js";
 
+export const getProfile = expressAsyncHandler(async(req, res, next) => {
+    
+    const user = await User.findOne({
+        id: req.user.id
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        user: user
+    });
+
+});
+
 export const editUser = expressAsyncHandler(async(req, res, next) => {
 
     const {firstName, lastName} = req.body;

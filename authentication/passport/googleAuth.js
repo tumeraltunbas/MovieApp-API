@@ -30,7 +30,8 @@ const googleStrategy = new Strategy({
                 lastName: profile.name.familyName, 
                 email: profile.emails[0].value,
                 isEmailVerified: profile.emails[0].verified,
-                profileImage: profile.photos[0].value
+                profileImage: profile.photos[0].value,
+                isRegisterCompleted: true
             });
 
             done(null, newUser);

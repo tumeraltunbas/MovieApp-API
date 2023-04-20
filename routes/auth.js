@@ -1,13 +1,16 @@
 import { Router } from "express";
-import { signUp, emailVerification, signIn, logout, passwordChange, emailChange, forgotPassword, resetPassword, deactiveAccount} from "../controllers/auth.js";
+import { signUp, emailVerification, signIn, googleAuthCallback, logout, passwordChange, emailChange, forgotPassword, resetPassword, deactiveAccount} from "../controllers/auth.js";
 import { checkUserExists } from "../middlewares/query/databaseQueryHelpers.js";
 import { isAuth } from "../middlewares/auth/auth.js";
+import passport from "passport";
 
 const router = Router();
 
 router.post("/signUp", signUp);
 router.get("/emailVerification", emailVerification);
 router.post("/signIn", checkUserExists, signIn);
+router.get("/google", passport.authenticate("google", {scope: ["profile", "email"]}));
+router.get("/google/callback", passport.authenticate("google"), googleAuthCallback);
 router.get("/logout", isAuth, logout);
 router.put("/passwordChange", isAuth, passwordChange);
 router.put("/emailChange", isAuth, emailChange);

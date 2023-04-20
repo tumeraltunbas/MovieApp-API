@@ -6,6 +6,7 @@ import roleRoutes from "./role.js";
 import countryRoutes from "./country.js";
 import staffRoutes from "./staff.js";
 import movieRoutes from "./movie.js";
+import "../authentication/passport/googleAuth.js";
 
 const router = Router();
 

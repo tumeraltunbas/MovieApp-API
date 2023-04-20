@@ -134,6 +134,25 @@ export const signIn = expressAsyncHandler(async(req, res, next) => {
 
 });
 
+export const googleAuthCallback = expressAsyncHandler(async(req, res, next) => {
+
+    const {COOKIE_EXPIRES, NODE_ENV} = process.env;
+    
+    const user = req.user;
+    console.log(user);
+    const jwt = user.createJwt();
+
+    res
+    .cookie("jwt", jwt, {
+        maxAge: COOKIE_EXPIRES,
+        httpOnly: NODE_ENV === "development" ? false : true
+    });
+
+    res
+    .redirect("/api/user/profile");
+
+});
+
 export const logout = (req, res, next) => {
     res
     .cookie("jwt", "", {maxAge: Date.now()})

@@ -6,6 +6,7 @@ import Genre from "./Genre.js";
 import Role from "./Role.js";
 import User from "./User.js";
 import Review from "./Review.js";
+import Favorite from "./Favorite.js";
 
 //Staff and role many to many
 Staff.belongsToMany(Role, { through: "StaffRoles" });
@@ -22,6 +23,18 @@ Staff.belongsToMany(Movie, { through: "MovieStaff" });
 //Movie and genre many to many
 Movie.belongsToMany(Genre, { through: "MovieGenres" });
 Genre.belongsToMany(Movie, { through: "MovieGenres" });
+
+//User and favorite one to many
+User.hasMany(Favorite);
+Favorite.belongsTo(User, {
+    foreignKey: "UserId"
+});
+
+//Movie and favorite one to many
+Movie.hasMany(Favorite);
+Favorite.belongsTo(Movie, {
+    foreignKey: "MovieId"
+});
 
 //Review and user one to many
 User.hasMany(Review, {

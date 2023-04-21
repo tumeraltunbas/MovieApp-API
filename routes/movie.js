@@ -4,6 +4,7 @@ import upload from "../helpers/multer/multer.js";
 import { createMovie, editMovie, deleteMovie, getAllMovies, getMovieById, getMoviesByGenreId, getMoviesByStaffId } from "../controllers/movie.js";
 import {checkGenreExists, checkMovieExists, checkStaffExists} from "../middlewares/query/databaseQueryHelpers.js";
 import reviewRoutes from "./review.js";
+import favoriteRoutes from "./favorite.js";
 
 const router = Router();
 
@@ -17,6 +18,7 @@ router.get("/genre/:genreId", checkGenreExists, getMoviesByGenreId);
 router.get("/staff/:staffId", checkStaffExists, getMoviesByStaffId);
 
 router.use("/:movieId/review", reviewRoutes);
+router.use("/:movieId/favorite", favoriteRoutes);
 
 
 export default router;

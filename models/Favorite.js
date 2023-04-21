@@ -15,10 +15,7 @@ const Favorite = sequelize.define("Favorite", {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
     },
-    isVisible: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: true
-    }
+
 });
 
 await Favorite.sync();

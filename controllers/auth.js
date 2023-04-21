@@ -7,7 +7,7 @@ import CustomError from "../helpers/error/CustomError.js";
 import { Op } from "sequelize";
 import bcrypt from "bcryptjs";
 
-export const signUp = expressAsyncHandler(async(req, res, next) => {g
+export const signUp = expressAsyncHandler(async(req, res, next) => {
 
     const {firstName, lastName, email, password} = req.body;
 
@@ -101,6 +101,10 @@ export const signIn = expressAsyncHandler(async(req, res, next) => {
     const user = await User.findOne({where: {
         email:email
     }});
+
+    if(user.googleId){
+        return next(new CustomError(400, "Please sign in with Google"));
+    }
 
     if(user.isRegisterCompleted === false || user.isEmailVerified === false) {
 

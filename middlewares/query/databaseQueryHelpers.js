@@ -7,6 +7,7 @@ import Country from "../../models/Country.js";
 import Staff from "../../models/Staff.js";
 import Movie from "../../models/Movie.js";
 import Review from "../../models/Review.js";
+import Favorite from "../../models/Favorite.js";
 
 
 export const checkUserExists = expressAsyncHandler(async(req, res, next) => {
@@ -126,6 +127,25 @@ export const checkReviewExistsInMovie = expressAsyncHandler(async(req, res, next
     if(!isReviewExist){
         return next(new CustomError(400, "Review was not found with that id"));
     };
+
+    next();
+
+});
+
+export const checkFavoriteExists = expressAsyncHandler(async(req, res, next) => {
+
+    const {movieId} = req.params;
+
+    const favorite = await Favorite.findOne({
+        where: {
+            MovieId: movieId,
+            UserId: req.user.id
+        }
+    });
+
+    if(!favorite){
+        return next(new CustomError(400, "Favorite was not found with that user and movie"));
+    }
 
     next();
 

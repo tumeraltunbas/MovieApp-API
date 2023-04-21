@@ -31,3 +31,25 @@ export const createFavorite = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const deleteFavorite = expressAsyncHandler(async(req, res, next) => {
+
+    const {movieId} = req.params;
+
+    const favorite = await Favorite.findOne({
+        where: {
+            MovieId: movieId,
+            UserId: req.user.id
+        }
+    });
+
+    await favorite.destroy();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Favorite has been deleted"
+    });
+
+});

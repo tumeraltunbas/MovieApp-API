@@ -1,12 +1,24 @@
 import expressAsyncHandler from "express-async-handler";
 import Review from "../models/Review.js";
 import Movie from "../models/Movie.js";
+import CustomError from "../helpers/error/CustomError.js";
 
 export const createReview = expressAsyncHandler(async(req, res, next) => {
 
     const {content, rating} = req.body;
     const {movieId} = req.params;
-    
+
+    const review = await Review.findOne({
+        where: {
+            MovieId: movieId,
+            UserId: req.user.id
+        }
+    });
+
+    if(review){
+        return next(new CustomError(400, "You alredy shared a review about this movie"));
+    }
+
     await Review.create({
         content: content,
         rating: rating,

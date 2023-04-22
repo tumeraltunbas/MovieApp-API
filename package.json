@@ -36,7 +36,9 @@
     "nodemailer": "^6.9.1",
     "passport": "^0.5.3",
     "passport-google-oauth20": "^2.0.0",
-    "sequelize": "^6.31.0"
+    "qrcode": "^1.5.3",
+    "sequelize": "^6.31.0",
+    "speakeasy": "^2.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"

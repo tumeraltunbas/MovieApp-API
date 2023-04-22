@@ -1,11 +1,13 @@
 import expressAsyncHandler from "express-async-handler"
 import User from "../models/User.js";
-import { createToken } from "../helpers/utils/tokenHelpers.js";
+import { createToken, saveJwtToCookie } from "../helpers/utils/tokenHelpers.js";
 import {sendEmailVerificationLinkToUser, sendMail} from "../helpers/mail/mailHelpers.js";
-import { validatePassword } from "../helpers/input/inputHelpers.js";
+import { check2FA, validatePassword } from "../helpers/input/inputHelpers.js";
 import CustomError from "../helpers/error/CustomError.js";
 import { Op } from "sequelize";
 import bcrypt from "bcryptjs";
+import speakeasy from "speakeasy";
+import qrcode from "qrcode";
 
 export const signUp = expressAsyncHandler(async(req, res, next) => {
 
@@ -53,7 +55,6 @@ export const signUp = expressAsyncHandler(async(req, res, next) => {
 export const emailVerification = expressAsyncHandler(async(req, res, next) => {
     
     const {emailVerificationToken} = req.query;
-    const {COOKIE_EXPIRES, NODE_ENV} = process.env;
 
     const user = await User.findOne({where: {
         [Op.and] : [
@@ -74,25 +75,13 @@ export const emailVerification = expressAsyncHandler(async(req, res, next) => {
 
     await user.save();
 
-    const jwt = user.createJwt();
-
-    res
-    .cookie("jwt", jwt, {
-        maxAge: COOKIE_EXPIRES,
-        httpOnly: NODE_ENV === "development" ? false : true
-    })
-    .status(200)
-    .json({
-        success:true, 
-        message: "Your email has been verified"
-    });
+    saveJwtToCookie(user, res);
 
 });
 
 export const signIn = expressAsyncHandler(async(req, res, next) => {
     
     const {email, password} = req.body;
-    const {COOKIE_EXPIRES, NODE_ENV} = process.env;
 
     if(!email || !password) {
         return next(new CustomError(400, "Please provide an email and password"));
@@ -123,18 +112,18 @@ export const signIn = expressAsyncHandler(async(req, res, next) => {
         await user.save();
     }
 
-    const jwt = user.createJwt();
+    if(user.isTwoFactorEnabled === true){
+        
+        return res
+        .status(200)
+        .json({
+            success: true,
+            id: user.id
+        });
 
-    res
-    .cookie("jwt", jwt, {
-        maxAge: COOKIE_EXPIRES,
-        httpOnly: NODE_ENV === "development" ? false : true
-    })
-    .status(200)
-    .json({
-        success:true, 
-        message: "Login successfull"
-    });
+    }
+
+    saveJwtToCookie(user, res);
 
 });
 
@@ -143,7 +132,6 @@ export const googleAuthCallback = expressAsyncHandler(async(req, res, next) => {
     const {COOKIE_EXPIRES, NODE_ENV} = process.env;
     
     const user = req.user;
-    console.log(user);
     const jwt = user.createJwt();
 
     res
@@ -194,7 +182,10 @@ export const passwordChange = expressAsyncHandler(async(req, res, next) => {
 
     return res
     .status(200)
-    .json({success:true, message: "Your password has been changed"});
+    .json({
+        success:true, 
+        message: "Your password has been changed"
+    });
 
 });
 
@@ -251,7 +242,10 @@ export const forgotPassword = expressAsyncHandler(async(req, res, next) => {
 
     return res
     .status(200)
-    .json({success:true, message: `Reset password link sent to ${email}`})
+    .json({
+        success:true, 
+        message: `Reset password link sent to ${email}`
+    });
 
 
 });
@@ -286,7 +280,10 @@ export const resetPassword = expressAsyncHandler(async(req, res, next) => {
 
     return res
     .status(200)
-    .json({success: true, message: "Your password has been changed"});
+    .json({
+        success: true, 
+        message: "Your password has been changed"
+    });
 
 });
 
@@ -308,5 +305,79 @@ export const deactiveAccount = expressAsyncHandler(async(req, res, next) => {
     return res
     .status(200)
     .json({success:true, message: "Your account has been deactivated"});
+
+});
+
+export const enable2FA = expressAsyncHandler(async(req, res, next) => {
+
+    const secret = speakeasy.generateSecret();
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id,
+            isActive: true
+        }
+    });
+
+    user.twoFactorSecret = secret.base32;
+    await user.save();
+
+    qrcode.toDataURL(secret.otpauth_url, (err, qrCode) => {
+        
+        if(err){
+            return next(err);
+        }
+
+        return res
+        .status(200)
+        .json({
+            success: true,
+            qrCode: qrCode
+        });
+
+    });
+});
+
+export const verify2FA = expressAsyncHandler(async(req, res, next) => {
+
+    const {token} = req.body;
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        },
+        attributes: ["id", "twoFactorSecret"]
+    });
+
+    if(!check2FA(user.twoFactorSecret, token)){
+        return next(new CustomError(400, "Token is invalid"));
+    }
+
+    user.isTwoFactorEnabled = true;
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+    });
+    
+});
+
+export const validate2FA = expressAsyncHandler(async(req, res, next) => {
+
+    const {token, userId} = req.body;
+    
+    const user = await User.findOne({
+        where: {
+            id: userId
+        }
+    });
+
+    if(!check2FA(user.twoFactorSecret, token)){
+        return next(new CustomError(400, "Token is invalid"));
+    }
+
+    saveJwtToCookie(user, res);
 
 });

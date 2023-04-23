@@ -1,4 +1,4 @@
-import { DataTypes } from "sequelize";
+import { DATE, DataTypes } from "sequelize";
 import { sequelize } from "../helpers/database/database.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
@@ -30,6 +30,16 @@ const User = sequelize.define("User", {
     password: {
         type: DataTypes.STRING,
     },
+    phone: {
+        type: DataTypes.STRING,
+        unique: true,
+        validate: {
+            is: {
+                args: /^\+[1-9]{1}[0-9]{7,11}$/ ,
+                msg: "Invalid phone pattern"
+            } 
+        },
+    },
     profileImage: {
         type: DataTypes.STRING,
         defaultValue: "default_pp.jpg"
@@ -43,6 +53,10 @@ const User = sequelize.define("User", {
         defaultValue: null
     },
     isEmailVerified: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    isPhoneVerified: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     },
@@ -61,6 +75,14 @@ const User = sequelize.define("User", {
     isRegisterCompleted: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
+    },
+    phoneVerificationCode: {
+        type: DataTypes.STRING,
+        defaultValue: null
+    },
+    phoneVerificationCodeExpires: {
+        type: DataTypes.DATE,
+        defaultValue: null
     },
     twoFactorSecret: {
         type: DataTypes.STRING,

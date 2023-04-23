@@ -1,7 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import Genre from "../models/Genre.js";
-import CustomError from "../helpers/error/CustomError.js";
 import { capitalize } from "../helpers/input/inputHelpers.js";
+import { paginationHelper } from "../helpers/utils/pagination.js";
 
 export const createGenre = expressAsyncHandler(async(req, res, next) => {
 
@@ -67,20 +67,25 @@ export const deleteGenre = expressAsyncHandler(async(req, res, next) => {
 
 export const getAllGenres = expressAsyncHandler(async(req, res, next) => {
     
+    const {startIndex, limit, pagination} = await paginationHelper(req, Genre);
+
     const genres = await Genre.findAll({
         where: {
             isVisible:true
         },
         order: [
             ["name", "ASC"]
-        ]
+        ],
+        offset: startIndex,
+        limit: limit
     });
 
     return res
     .status(200)
     .json({
         success: true,
-        genres: genres
+        genres: genres,
+        pagination: pagination
     });
 
 });

@@ -1,8 +1,8 @@
 import expressAsyncHandler from "express-async-handler";
 import Favorite from "../models/Favorite.js";
-import Movie from "../models/Movie.js";
 import CustomError from "../helpers/error/CustomError.js";
 import User from "../models/User.js";
+import { paginationHelper } from "../helpers/utils/pagination.js";
 
 export const createFavorite = expressAsyncHandler(async(req, res, next) => {
 
@@ -59,6 +59,8 @@ export const getFavoritesByMovieId = expressAsyncHandler(async(req, res, next) =
 
     const {movieId} = req.params;
 
+    const {startIndex, limit, pagination} = await paginationHelper(req, Favorite);
+
     const favorites = await Favorite.findAll({
         where: {
             MovieId: movieId 
@@ -66,7 +68,9 @@ export const getFavoritesByMovieId = expressAsyncHandler(async(req, res, next) =
         include: {
             model: User,
             attributes: ["id", "firstName", "lastName"]
-        }
+        },
+        offset: startIndex,
+        limit: limit
     });
 
     return res
@@ -74,7 +78,8 @@ export const getFavoritesByMovieId = expressAsyncHandler(async(req, res, next) =
     .json({
         success: true,
         favorites: favorites,
-        favoriteCount: favorites.length
+        favoriteCount: favorites.length,
+        pagination: pagination
     });
 
 });

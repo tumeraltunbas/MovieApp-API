@@ -2,6 +2,7 @@ import expressAsyncHandler from "express-async-handler";
 import User from "../models/User.js";
 import Favorite from "../models/Favorite.js";
 import Movie from "../models/Movie.js";
+import { paginationHelper } from "../helpers/utils/pagination.js";
 
 export const getProfile = expressAsyncHandler(async(req, res, next) => {
     
@@ -79,6 +80,8 @@ export const deleteProfileImage = expressAsyncHandler(async(req, res, next) => {
 
 export const getFavorites = expressAsyncHandler(async(req, res, next) => {
 
+    const {startIndex, limit, pagination} = await paginationHelper(req, Favorite);
+
     const favorites = await Favorite.findAll({
         where: {
             UserId: req.user.id
@@ -86,7 +89,9 @@ export const getFavorites = expressAsyncHandler(async(req, res, next) => {
         include: {
             model: Movie,
             attributes: ["title", "moviePoster", "rating", "duration", "description", "releaseDate"]
-        }
+        },
+        offset: startIndex,
+        limit: limit
     });
 
     return res
@@ -94,7 +99,8 @@ export const getFavorites = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         favorites: favorites,
-        favoriteCount: favorites.length
+        favoriteCount: favorites.length,
+        pagination: pagination
     });
 
 });

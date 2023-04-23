@@ -3,6 +3,7 @@ import Staff from "../models/Staff.js";
 import CustomError from "../helpers/error/CustomError.js";
 import Role from "../models/Role.js";
 import Country from "../models/Country.js";
+import { paginationHelper } from "../helpers/utils/pagination.js";
 
 
 export const createStaff = expressAsyncHandler(async(req, res, next) => {
@@ -96,43 +97,55 @@ export const deleteStaff = expressAsyncHandler(async(req, res, next) => {
 
 export const getAllStaffs = expressAsyncHandler(async(req, res, next) => {
 
+    const {startIndex, limit, pagination} = await paginationHelper(req, Staff);
+
     const staffs = await Staff.findAll({
         where: {
             isVisible: true
         },
         order: [
             ["firstName", "ASC"]
-        ]
+        ],
+        offset: startIndex,
+        limit: limit
     });
 
     return res
     .status(200)
     .json({
         success: true,
-        staffs: staffs
+        staffs: staffs,
+        pagination: pagination
     });
 
 });
 
 export const getAllActors = expressAsyncHandler(async(req, res, next) => {
 
+    const {startIndex, limit, pagination} = await paginationHelper(req, Staff);
+
     const actors = await Staff.findAll({
         include: {
             model: Role,
             where: { name: "Actor" }
-        }
+        },
+        offset: startIndex,
+        limit: limit
     });
 
     return res
     .status(200)
     .json({
         success: true,
-        actors: actors
+        actors: actors,
+        pagination: pagination
     });
 
 });
 
 export const getAllDirectors = expressAsyncHandler(async(req, res, next) => {
+
+    const {startIndex, limit, pagination} = await paginationHelper(req, Staff);
 
     const directors = await Staff.findAll({
         where: {
@@ -141,14 +154,17 @@ export const getAllDirectors = expressAsyncHandler(async(req, res, next) => {
         include: {
             model: Role,
             where: { name: "Director" }
-        }
+        },
+        offset: startIndex,
+        limit: limit
     });
 
     return res
     .status(200)
     .json({
         success: true,
-        directors: directors
+        directors: directors,
+        pagination: pagination
     });
 
 });
@@ -175,6 +191,8 @@ export const getStaffsByCountryId = expressAsyncHandler(async(req, res, next) =>
 
     const {countryId} = req.params;
 
+    const {startIndex, limit, pagination} = await paginationHelper(req, Staff);
+
     const staffs = await Staff.findAll({
         where: {
             isVisible: true
@@ -182,14 +200,17 @@ export const getStaffsByCountryId = expressAsyncHandler(async(req, res, next) =>
         include: {
             model: Country,
             where: { id: countryId}
-        }
+        },
+        offset: startIndex,
+        limit: limit
     });
 
     return res
     .status(200)
     .json({
         success: true,
-        staffs: staffs
+        staffs: staffs,
+        pagination: pagination
     });
 
 });

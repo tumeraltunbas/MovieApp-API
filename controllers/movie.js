@@ -4,6 +4,7 @@ import {capitalize} from "../helpers/input/inputHelpers.js";
 import CustomError from "../helpers/error/CustomError.js";
 import Genre from "../models/Genre.js";
 import Staff from "../models/Staff.js";
+import { paginationHelper } from "../helpers/utils/pagination.js";
 
 export const createMovie = expressAsyncHandler(async(req, res, next) => {
 
@@ -93,15 +94,23 @@ export const deleteMovie = expressAsyncHandler(async(req, res, next) => {
 
 export const getAllMovies = expressAsyncHandler(async(req, res, next) => {
 
-    const movies = await Movie.findAll({where: {
-        isVisible: true
-    }});
+
+    const {startIndex, limit, pagination} = await paginationHelper(req, Movie);
+
+    const movies = await Movie.findAll({
+        where: {
+            isVisible: true,
+        },
+        offset: startIndex,
+        limit: limit
+    });
 
     return res
     .status(200)
     .json({
         success: true,
-        movies: movies
+        movies: movies,
+        pagination: pagination
     });
 
 });
@@ -128,6 +137,8 @@ export const getMoviesByGenreId = expressAsyncHandler(async(req, res, next) => {
 
     const {genreId} = req.params;
 
+    const {startIndex, limit, pagination} = await paginationHelper(req, Movie);
+    
     const movies = await Movie.findAll({
         where: {
             isVisible: true
@@ -135,14 +146,17 @@ export const getMoviesByGenreId = expressAsyncHandler(async(req, res, next) => {
         include: {
             model: Genre,
             where: { id: genreId }
-        }
+        },
+        offset: startIndex,
+        limit: limit
     });
 
     return res
     .status(200)
     .json({
         success: true,
-        movies: movies
+        movies: movies,
+        pagination: pagination
     });
 
 });
@@ -151,6 +165,8 @@ export const getMoviesByStaffId = expressAsyncHandler(async(req,res, next) => {
 
     const {staffId} = req.params;
 
+    const {startIndex, limit, pagination} = await paginationHelper(req, Movie);
+
     const movies = await Movie.findAll({
         where: {
             isVisible: true
@@ -158,14 +174,17 @@ export const getMoviesByStaffId = expressAsyncHandler(async(req,res, next) => {
         include: {
             model: Staff,
             where: { id: staffId }
-        }
+        },
+        offset: startIndex,
+        limit: limit
     });
 
     return res
     .status(200)
     .json({
         success: true,
-        movies: movies
+        movies: movies,
+        pagination: pagination
     });
 
 });

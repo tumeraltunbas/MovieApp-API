@@ -1,6 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import Role from "../models/Role.js";
 import { capitalize } from "../helpers/input/inputHelpers.js";
+import { paginationHelper } from "../helpers/utils/pagination.js";
 
 export const createRole = expressAsyncHandler(async(req, res, next) => {
     
@@ -65,20 +66,25 @@ export const deleteRole = expressAsyncHandler(async(req, res, next) => {
 
 export const getAllRoles = expressAsyncHandler(async(req, res, next) => {
     
+    const {startIndex, limit, pagination} = await paginationHelper(req, Role);
+
     const roles = await Role.findAll({
         where: {
         isVisible: true
         },
         order: [
             ["name", "ASC"]
-        ]
+        ],
+        offset: startIndex,
+        limit: limit
     });
 
     return res
     .status(200)
     .json({
         success: true,
-        roles: roles
+        roles: roles,
+        pagination: pagination
     });
 
 });

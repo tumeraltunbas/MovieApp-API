@@ -2,6 +2,7 @@ import expressAsyncHandler from "express-async-handler";
 import Review from "../models/Review.js";
 import Movie from "../models/Movie.js";
 import CustomError from "../helpers/error/CustomError.js";
+import { paginationHelper } from "../helpers/utils/pagination.js";
 
 export const createReview = expressAsyncHandler(async(req, res, next) => {
 
@@ -81,6 +82,8 @@ export const getReviewsByMovieId = expressAsyncHandler(async(req, res, next) => 
 
     const {movieId} = req.params;
 
+    const {startIndex, limit, pagination} = await paginationHelper(req, Review);
+
     const reviews = await Review.findAll({
         where: {
             isVisible: true,
@@ -88,7 +91,9 @@ export const getReviewsByMovieId = expressAsyncHandler(async(req, res, next) => 
         include: {
             model: Movie,
             where: { id: movieId }    
-        }
+        },
+        offset: startIndex,
+        limit: limit
         
     });
 
@@ -96,7 +101,8 @@ export const getReviewsByMovieId = expressAsyncHandler(async(req, res, next) => 
     .status(200)
     .json({
         success: true,
-        reviews: reviews
+        reviews: reviews,
+        pagination: pagination
     });
 
 });

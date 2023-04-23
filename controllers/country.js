@@ -1,7 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import Country from "../models/Country.js";
-import CustomError from "../helpers/error/CustomError.js";
 import { capitalize } from "../helpers/input/inputHelpers.js";
+import { paginationHelper } from "../helpers/utils/pagination.js";
 
 export const createCountry = expressAsyncHandler(async(req, res, next) => {
 
@@ -66,15 +66,19 @@ export const deleteCountry = expressAsyncHandler(async(req, res, next) => {
 
 export const getAllCountries = expressAsyncHandler(async(req, res, next) => {
 
-    const countries = await Country.findAll({where: {
-        isVisible: true
-    }});
+    const {startIndex, limit, pagination} = await paginationHelper(req, Country);
+
+    const countries = await Country.findAll({
+        offset: startIndex,
+        limit: limit
+    });
 
     return res
     .status(200)
     .json({
         success: true,
-        countries: countries
+        countries: countries,
+        pagination: pagination
     });
 
 });

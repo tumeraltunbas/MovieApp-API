@@ -8,6 +8,7 @@ import { Op } from "sequelize";
 import bcrypt from "bcryptjs";
 import speakeasy from "speakeasy";
 import qrcode from "qrcode";
+import moment from "moment";
 
 export const signUp = expressAsyncHandler(async(req, res, next) => {
 
@@ -179,6 +180,15 @@ export const passwordChange = expressAsyncHandler(async(req, res, next) => {
     user.password = newPassword;
     user.lastPasswordChangedAt = Date.now();
     await user.save();
+
+    const mailOptions = {
+        from: process.env.SMTP_USER,
+        to: user.email,
+        subject: "About Password Changing",
+        html: `<h3>Your password has been changed at ${moment(user.lastPasswordChangedAt).format("DD.MM.YYYY HH:mm:ss")}. If you did not do that, contact us!</h3>`
+    }
+
+    sendMail(mailOptions);
 
     return res
     .status(200)

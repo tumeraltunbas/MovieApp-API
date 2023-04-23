@@ -21,6 +21,18 @@ app.use(rateLimit({
 app.use(helmet());
 app.use(express.static("public")),
 app.use("/api", routes);
+
+//404 route
+app.use((req, res, next) => {
+    
+    return res
+    .status(404)
+    .json({
+        success: false,
+        messsage: "This endpoint is not in use"
+    });
+});
+
 app.use(errorHandler);
 
 app.listen(process.env.PORT, () => console.log(`Server is up at ${process.env.PORT}`));

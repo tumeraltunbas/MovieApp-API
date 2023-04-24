@@ -116,6 +116,10 @@ export const signIn = expressAsyncHandler(async(req, res, next) => {
 
     if(user.isTwoFactorEnabled === true){
         
+        if(!user.twoFactorSecret){
+            await sendPhoneCodeHelper(user);
+        }
+
         return res
         .status(200)
         .json({
@@ -403,10 +407,10 @@ export const addPhone = expressAsyncHandler(async(req, res, next) => {
         }
     });
 
-    user.phone = phoneNumber;
+    user.phoneNumber = phoneNumber;
     await user.save();
 
-    sendPhoneCodeHelper(user);
+    await sendPhoneCodeHelper(user);
 
     return res
     .status(200)
@@ -423,20 +427,22 @@ export const verifyPhone = expressAsyncHandler(async(req, res, next) => {
 
     const user = await User.findOne({
         where: {
-            [Op.and] : [
-                {phoneCode: phoneCode}, 
-                {phoneCodeExpires: {[Op.gte]: Date.now()}}
-            ]
+            id: req.user.id
         }
     });
+    
+    if(!user.phoneCode === phoneCode || user.phoneCodeExpires < Date.now()){
+        return next(new CustomError(400, "Your phone code wrong or expired"));
+    }
 
-    if(!user){
-        return next(new CustomError(400, "Your phone verification code wrong or expired"));
+    if(user.isPhoneVerified === true){
+        return next(new CustomError(400, "You can not access to this route because your phone has already been verified"));
     }
 
     user.phoneCode = null;
     user.phoneCodeExpires = null;
     user.isPhoneVerified = true;
+    user.isTwoFactorEnabled = true;
 
     await user.save();
 
@@ -444,7 +450,7 @@ export const verifyPhone = expressAsyncHandler(async(req, res, next) => {
     .status(200)
     .json({
         success: true,
-        message: "Your phone has been verified"
+        message: "Your phone has been verified and 2FA with phone enabled"
     });
 
 });
@@ -460,6 +466,10 @@ export const validatePhone = expressAsyncHandler(async(req, res, next) => {
             email: email
         }
     });
+
+    if(!user.isTwoFactorEnabled){
+        return next(new CustomError(400, "You did not enable 2 Factor Authentication"));
+    }
 
     if(user.phoneCode != phoneCode || user.phoneCodeExpires < Date.now()){
     
@@ -485,13 +495,17 @@ export const sendPhoneCode = expressAsyncHandler(async(req, res, next) => {
         }
     });
 
-    sendPhoneCodeHelper(user);
+    if(!user.phoneNumber){
+        return next(new CustomError(400, "You can not access this route because you did not add any phone Number"));
+    }
+
+    await sendPhoneCodeHelper(user);
 
     return res
     .status(200)
     .json({
         success: true,
-        message: `SMS sent to ${user.phoneNumber}`
+        message: `SMS successfully sent`
     });
 
 });

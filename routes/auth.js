@@ -22,7 +22,7 @@ router.post("/2fa/verify", isAuth, verify2FA);
 router.post("/2fa/validate", validate2FA);
 router.post("/phone", isAuth, addPhone);
 router.post("/phone/verify", isAuth, verifyPhone);
-router.post("/phone/validate", validatePhone);
+router.post("/phone/validate", checkUserExists, validatePhone);
 router.post("/phone/send", checkUserExists, sendPhoneCode);
 
 export default router;

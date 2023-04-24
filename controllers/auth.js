@@ -10,7 +10,7 @@ import speakeasy from "speakeasy";
 import qrcode from "qrcode";
 import moment from "moment";
 import randomInteger from "random-int";
-import { sendSms } from "../helpers/sms/smsHelpers.js";
+import { sendPhoneCode, sendSms } from "../helpers/sms/smsHelpers.js";
 
 export const signUp = expressAsyncHandler(async(req, res, next) => {
 
@@ -397,7 +397,6 @@ export const validate2FA = expressAsyncHandler(async(req, res, next) => {
 export const addPhone = expressAsyncHandler(async(req, res, next) => {
 
     const {phoneNumber} = req.body;
-    const {PHONE_CODE_EXPIRES} = process.env;
 
     const user = await User.findOne({
         where: {
@@ -405,15 +404,7 @@ export const addPhone = expressAsyncHandler(async(req, res, next) => {
         }
     });
 
-    const randomInt = randomInteger(111111,999999);
-
-    user.phoneNumber = phoneNumber;
-    user.phoneCode = randomInt;
-    user.phoneCodeExpires = new Date(Date.now() + Number(PHONE_CODE_EXPIRES)); //5 minutes
-
-    await user.save();
-
-    await sendSms(user.phoneNumber, `Your phone code is ${user.phoneCode}. This code is valid for 5 minutes.`);
+    sendPhoneCode(user, phoneNumber);
 
     return res
     .status(200)
@@ -453,5 +444,31 @@ export const verifyPhone = expressAsyncHandler(async(req, res, next) => {
         success: true,
         message: "Your phone has been verified"
     });
+
+});
+
+export const validatePhone = expressAsyncHandler(async(req, res, next) => {
     
+    // second option for 2fa
+    
+    const {email, phoneCode} = req.body;
+
+    const user = await User.findOne({
+        where: {
+            email: email
+        }
+    });
+
+    if(user.phoneCode != phoneCode || user.phoneCodeExpires < Date.now()){
+    
+        return next(new CustomError(400, "Your phone code wrong or expired"));
+    }
+
+    user.phoneCode = null;
+    user.phoneCodeExpires = null;
+
+    await user.save();
+
+    saveJwtToCookie(user, res);
+
 });

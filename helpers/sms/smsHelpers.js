@@ -24,14 +24,13 @@ export const sendSms = (phoneNumber, message) => {
     
 }
 
-export const sendPhoneCode = async(user, phone) => 
+export const sendPhoneCodeHelper = async(user) => 
 {
 
     const {PHONE_CODE_EXPIRES} = process.env;
 
     const randomInt = randomInteger(111111,999999);
     
-    user.phoneNumber = phone;
     user.phoneCode = randomInt;
     user.phoneCodeExpires =  new Date(Date.now() + Number(PHONE_CODE_EXPIRES)); //5 minutes
 

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { signUp, emailVerification, signIn, googleAuthCallback, logout, passwordChange, emailChange, forgotPassword, resetPassword, deactiveAccount, enable2FA, verify2FA, validate2FA} from "../controllers/auth.js";
+import { signUp, emailVerification, signIn, googleAuthCallback, logout, passwordChange, emailChange, forgotPassword, resetPassword, deactiveAccount, enable2FA, verify2FA, validate2FA, addPhone} from "../controllers/auth.js";
 import { checkUserExists } from "../middlewares/query/databaseQueryHelpers.js";
 import { isAuth } from "../middlewares/auth/auth.js";
 import passport from "passport";
@@ -20,6 +20,7 @@ router.post("/deactive", isAuth, deactiveAccount);
 router.get("/2fa/enable", isAuth, enable2FA);
 router.post("/2fa/verify", isAuth, verify2FA);
 router.post("/2fa/validate", validate2FA);
+router.post("/phone", isAuth, addPhone);
 
 
 export default router;

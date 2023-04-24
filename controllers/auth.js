@@ -9,6 +9,8 @@ import bcrypt from "bcryptjs";
 import speakeasy from "speakeasy";
 import qrcode from "qrcode";
 import moment from "moment";
+import randomInteger from "random-int";
+import { sendSms } from "../helpers/sms/smsHelpers.js";
 
 export const signUp = expressAsyncHandler(async(req, res, next) => {
 
@@ -390,4 +392,34 @@ export const validate2FA = expressAsyncHandler(async(req, res, next) => {
 
     saveJwtToCookie(user, res);
 
+});
+
+export const addPhone = expressAsyncHandler(async(req, res, next) => {
+
+    const {phoneNumber} = req.body;
+    const {PHONE_CODE_EXPIRES} = process.env;
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        }
+    });
+
+    const randomInt = randomInteger(111111,999999);
+
+    user.phoneNumber = phoneNumber;
+    user.phoneCode = randomInt;
+    user.phoneCodeExpires = new Date(Date.now() + Number(PHONE_CODE_EXPIRES)); //5 minutes
+
+    await user.save();
+
+    await sendSms(user.phoneNumber, `Your phone code is ${user.phoneCode}. This code is valid for 5 minutes.`);
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "SMS successfully sent"
+    });
+    
 });

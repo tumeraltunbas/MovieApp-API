@@ -20,6 +20,7 @@
   "homepage": "https://github.com/tumeraltunbas/MovieApp-API#readme",
   "dependencies": {
     "app-root-path": "^3.1.0",
+    "aws-sdk": "^2.1363.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cookie-session": "^2.0.0",
@@ -38,6 +39,7 @@
     "passport": "^0.5.3",
     "passport-google-oauth20": "^2.0.0",
     "qrcode": "^1.5.3",
+    "random-int": "^3.0.0",
     "sequelize": "^6.31.0",
     "speakeasy": "^2.0.0"
   },

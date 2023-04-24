@@ -1,4 +1,5 @@
 import AWS from "aws-sdk";
+import randomInteger from "random-int";
 
 export const sendSms = (phoneNumber, message) => {
     
@@ -21,4 +22,21 @@ export const sendSms = (phoneNumber, message) => {
     .then()
     .catch(err => console.log(err));
     
+}
+
+export const sendPhoneCode = async(user, phone) => 
+{
+
+    const {PHONE_CODE_EXPIRES} = process.env;
+
+    const randomInt = randomInteger(111111,999999);
+    
+    user.phoneNumber = phone;
+    user.phoneCode = randomInt;
+    user.phoneCodeExpires =  new Date(Date.now() + Number(PHONE_CODE_EXPIRES)); //5 minutes
+
+    await user.save();
+
+    await sendSms(user.phoneNumber, `Your phone code is ${user.phoneCode}. This code is valid for 5 minutes.`);
+
 }

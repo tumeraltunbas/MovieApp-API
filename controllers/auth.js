@@ -9,8 +9,7 @@ import bcrypt from "bcryptjs";
 import speakeasy from "speakeasy";
 import qrcode from "qrcode";
 import moment from "moment";
-import randomInteger from "random-int";
-import { sendPhoneCode, sendSms } from "../helpers/sms/smsHelpers.js";
+import { sendPhoneCodeHelper } from "../helpers/sms/smsHelpers.js";
 
 export const signUp = expressAsyncHandler(async(req, res, next) => {
 
@@ -404,7 +403,10 @@ export const addPhone = expressAsyncHandler(async(req, res, next) => {
         }
     });
 
-    sendPhoneCode(user, phoneNumber);
+    user.phone = phoneNumber;
+    await user.save();
+
+    sendPhoneCodeHelper(user);
 
     return res
     .status(200)
@@ -470,5 +472,26 @@ export const validatePhone = expressAsyncHandler(async(req, res, next) => {
     await user.save();
 
     saveJwtToCookie(user, res);
+
+});
+
+export const sendPhoneCode = expressAsyncHandler(async(req, res, next) => {
+
+    const {email} = req.body;
+
+    const user = await User.findOne({
+        where: {
+            email:email
+        }
+    });
+
+    sendPhoneCodeHelper(user);
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: `SMS sent to ${user.phoneNumber}`
+    });
 
 });

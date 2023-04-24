@@ -423,3 +423,35 @@ export const addPhone = expressAsyncHandler(async(req, res, next) => {
     });
     
 });
+
+export const verifyPhone = expressAsyncHandler(async(req, res, next) => {
+
+    const {phoneCode} = req.body;
+
+    const user = await User.findOne({
+        where: {
+            [Op.and] : [
+                {phoneCode: phoneCode}, 
+                {phoneCodeExpires: {[Op.gte]: Date.now()}}
+            ]
+        }
+    });
+
+    if(!user){
+        return next(new CustomError(400, "Your phone verification code wrong or expired"));
+    }
+
+    user.phoneCode = null;
+    user.phoneCodeExpires = null;
+    user.isPhoneVerified = true;
+
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Your phone has been verified"
+    });
+    
+});

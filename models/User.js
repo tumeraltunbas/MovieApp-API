@@ -30,7 +30,7 @@ const User = sequelize.define("User", {
     password: {
         type: DataTypes.STRING,
     },
-    phone: {
+    phoneNumber: {
         type: DataTypes.STRING,
         unique: true,
         validate: {
@@ -76,11 +76,11 @@ const User = sequelize.define("User", {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     },
-    phoneVerificationCode: {
-        type: DataTypes.STRING,
+    phoneCode: {
+        type: DataTypes.INTEGER,
         defaultValue: null
     },
-    phoneVerificationCodeExpires: {
+    phoneCodeExpires: {
         type: DataTypes.DATE,
         defaultValue: null
     },

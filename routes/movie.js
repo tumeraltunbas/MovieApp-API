@@ -5,6 +5,7 @@ import { createMovie, editMovie, deleteMovie, getAllMovies, getMovieById, getMov
 import {checkGenreExists, checkMovieExists, checkStaffExists} from "../middlewares/query/databaseQueryHelpers.js";
 import reviewRoutes from "./review.js";
 import favoriteRoutes from "./favorite.js";
+import movieQueryMiddleware from "../middlewares/query/movieQueryMiddleware.js";
 
 const router = Router();
 
@@ -12,7 +13,7 @@ router.post("/", [isAuth, getAdminAccess, upload.single("file")], createMovie);
 router.put("/:movieId", [isAuth, getAdminAccess, checkMovieExists, upload.single("file")], editMovie);
 router.put("/:movieId/delete", [isAuth, getAdminAccess, checkMovieExists], deleteMovie);
 
-router.get("/", getAllMovies);
+router.get("/", movieQueryMiddleware, getAllMovies);
 router.get("/:movieId", checkMovieExists, getMovieById);
 router.get("/genre/:genreId", checkGenreExists, getMoviesByGenreId);
 router.get("/staff/:staffId", checkStaffExists, getMoviesByStaffId);

@@ -94,24 +94,9 @@ export const deleteMovie = expressAsyncHandler(async(req, res, next) => {
 
 export const getAllMovies = expressAsyncHandler(async(req, res, next) => {
 
-
-    const {startIndex, limit, pagination} = await paginationHelper(req, Movie);
-
-    const movies = await Movie.findAll({
-        where: {
-            isVisible: true,
-        },
-        offset: startIndex,
-        limit: limit
-    });
-
     return res
     .status(200)
-    .json({
-        success: true,
-        movies: movies,
-        pagination: pagination
-    });
+    .json(res.movies);
 
 });
 

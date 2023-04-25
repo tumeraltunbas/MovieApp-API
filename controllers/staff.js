@@ -4,6 +4,8 @@ import CustomError from "../helpers/error/CustomError.js";
 import Role from "../models/Role.js";
 import Country from "../models/Country.js";
 import { paginationHelper } from "../helpers/utils/pagination.js";
+import { staffSortHelper } from "../middlewares/query/queryMiddlewareHelpers.js";
+import { Op } from "sequelize";
 
 
 export const createStaff = expressAsyncHandler(async(req, res, next) => {
@@ -99,12 +101,25 @@ export const getAllStaffs = expressAsyncHandler(async(req, res, next) => {
 
     const {startIndex, limit, pagination} = await paginationHelper(req, Staff);
 
+    const {sortBy, value} = staffSortHelper(req);
+
+    const {search} = req.query;
+
     const staffs = await Staff.findAll({
-        where: {
+        where: search ? {
+            [Op.or]: [
+                {firstName: {
+                    [Op.like]: `%${search}%`
+                }},
+                {lastName: {
+                    [Op.like]: `%${search}%`
+                }}
+            ],
             isVisible: true
-        },
+        } 
+        : {isVisible: true},
         order: [
-            ["firstName", "ASC"]
+            [sortBy, value]
         ],
         offset: startIndex,
         limit: limit

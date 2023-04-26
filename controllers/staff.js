@@ -64,9 +64,13 @@ export const editStaff = async(req, res, next) => {
 
     await staff.update({...updateInformations});
 
-    //to be refactored
-    await staff.addRole(updateInformations.RoleId);
-    await staff.addCountry(updateInformations.CountryId);
+    if(updateInformations.RoleId){
+        await staff.addRole(updateInformations.RoleId);
+    }
+
+    if(updateInformations.CountryId){
+        await staff.addCountry(updateInformations.CountryId);
+    }
 
     return res
     .status(200)

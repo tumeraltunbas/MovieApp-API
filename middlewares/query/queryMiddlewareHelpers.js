@@ -53,3 +53,29 @@ export const staffSortHelper = (req) => {
     return {sortBy, value}
 
 }
+
+export const staffSearchHelper = (req) => {
+
+    const {search} = req.query;
+
+    let where = {
+        isVisible: true
+    };
+
+    if(search){
+        where = {
+            [Op.or]: [
+                {firstName: {
+                    [Op.like]: `%${search}%`
+                }},
+                {lastName: {
+                    [Op.like]: `%${search}%`
+                }}
+            ],
+            isVisible: true
+        }
+    }
+    
+    return where;
+
+}

@@ -176,7 +176,7 @@ export const getMoviesByStaffId = expressAsyncHandler(async(req,res, next) => {
         include: {
             model: Staff,
             where: { id: staffId },
-            attributes: ["firstName", "lastName", "profileImage"]
+            attributes: ["firstName", "lastName", "image"]
         },
         offset: startIndex,
         limit: limit,

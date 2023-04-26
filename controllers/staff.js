@@ -3,9 +3,7 @@ import Staff from "../models/Staff.js";
 import CustomError from "../helpers/error/CustomError.js";
 import Role from "../models/Role.js";
 import Country from "../models/Country.js";
-import { paginationHelper } from "../helpers/utils/pagination.js";
-import { staffSortHelper } from "../middlewares/query/queryMiddlewareHelpers.js";
-import { Op } from "sequelize";
+import { capitalize } from "../helpers/input/inputHelpers.js";
 
 
 export const createStaff = expressAsyncHandler(async(req, res, next) => {
@@ -27,9 +25,9 @@ export const createStaff = expressAsyncHandler(async(req, res, next) => {
     }    
 
     const staff = await Staff.create({
-        firstName: firstName,
+        firstName: capitalize(firstName),
         middleName: middleName || null,
-        lastName: lastName,
+        lastName: capitalize(lastName),
         gender: gender,
         image:req.file.filename,
         biography: biography,
@@ -66,6 +64,10 @@ export const editStaff = async(req, res, next) => {
 
     await staff.update({...updateInformations});
 
+    //to be refactored
+    await staff.addRole(updateInformations.RoleId);
+    await staff.addCountry(updateInformations.CountryId);
+
     return res
     .status(200)
     .json({
@@ -99,30 +101,16 @@ export const deleteStaff = expressAsyncHandler(async(req, res, next) => {
 
 export const getAllStaffs = expressAsyncHandler(async(req, res, next) => {
 
-    const {startIndex, limit, pagination} = await paginationHelper(req, Staff);
-
-    const {sortBy, value} = staffSortHelper(req);
-
-    const {search} = req.query;
+    const {sortBy, value, where, startIndex, limit, pagination} = req.staffQuery;
 
     const staffs = await Staff.findAll({
-        where: search ? {
-            [Op.or]: [
-                {firstName: {
-                    [Op.like]: `%${search}%`
-                }},
-                {lastName: {
-                    [Op.like]: `%${search}%`
-                }}
-            ],
-            isVisible: true
-        } 
-        : {isVisible: true},
-        order: [
-            [sortBy, value]
-        ],
+        where: where,
         offset: startIndex,
-        limit: limit
+        limit: limit,
+        order: [[sortBy, value]],
+        attributes: {
+            exclude: ["createdAt", "isVisible"]
+        }
     });
 
     return res
@@ -137,15 +125,21 @@ export const getAllStaffs = expressAsyncHandler(async(req, res, next) => {
 
 export const getAllActors = expressAsyncHandler(async(req, res, next) => {
 
-    const {startIndex, limit, pagination} = await paginationHelper(req, Staff);
+    const {sortBy, value, where, startIndex, limit, pagination} = req.staffQuery;
 
     const actors = await Staff.findAll({
+        where: where,
         include: {
             model: Role,
-            where: { name: "Actor" }
+            where: { name: "Actor" },
+            attributes: ["name"]
         },
         offset: startIndex,
-        limit: limit
+        limit: limit,
+        order: [[sortBy, value]],
+        attributes: {
+            exclude: ["createdAt", "updatedAt", "isVisible"]
+        }
     });
 
     return res
@@ -160,18 +154,20 @@ export const getAllActors = expressAsyncHandler(async(req, res, next) => {
 
 export const getAllDirectors = expressAsyncHandler(async(req, res, next) => {
 
-    const {startIndex, limit, pagination} = await paginationHelper(req, Staff);
+    const {sortBy, value, where, startIndex, limit, pagination} = req.staffQuery;
 
     const directors = await Staff.findAll({
-        where: {
-            isVisible: true,
-        },
+        where: where,
         include: {
             model: Role,
             where: { name: "Director" }
         },
         offset: startIndex,
-        limit: limit
+        limit: limit,
+        order: [[sortBy, value]],
+        attributes: {
+            exclude: ["createdAt", "updatedAt" ,"isVisible"]
+        }
     });
 
     return res
@@ -206,18 +202,21 @@ export const getStaffsByCountryId = expressAsyncHandler(async(req, res, next) =>
 
     const {countryId} = req.params;
 
-    const {startIndex, limit, pagination} = await paginationHelper(req, Staff);
+    const {sortBy, value, where, startIndex, limit, pagination} = req.staffQuery;
 
     const staffs = await Staff.findAll({
-        where: {
-            isVisible: true
-        },
+        where: where,
         include: {
             model: Country,
-            where: { id: countryId}
+            where: { id: countryId },
+            attributes: ["name"]
         },
         offset: startIndex,
-        limit: limit
+        limit: limit,
+        order: [[sortBy, value]],
+        attributes: {
+            exclude: ["createdAt", "updatedAt" ,"isVisible"]
+        }
     });
 
     return res

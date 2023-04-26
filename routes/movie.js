@@ -15,8 +15,8 @@ router.put("/:movieId/delete", [isAuth, getAdminAccess, checkMovieExists], delet
 
 router.get("/", movieQueryMiddleware, getAllMovies);
 router.get("/:movieId", checkMovieExists, getMovieById);
-router.get("/genre/:genreId", checkGenreExists, getMoviesByGenreId);
-router.get("/staff/:staffId", checkStaffExists, getMoviesByStaffId);
+router.get("/genre/:genreId", [checkGenreExists, movieQueryMiddleware], getMoviesByGenreId);
+router.get("/staff/:staffId", [checkStaffExists, movieQueryMiddleware], getMoviesByStaffId);
 
 router.use("/:movieId/review", reviewRoutes);
 router.use("/:movieId/favorite", favoriteRoutes);

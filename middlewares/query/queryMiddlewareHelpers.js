@@ -1,3 +1,5 @@
+import { Op } from "sequelize";
+
 export const movieSortHelper = (req) => {
 
     let {sortBy, value} = req.query;
@@ -15,6 +17,22 @@ export const movieSortHelper = (req) => {
 
     return {sortBy, value}
 
+}
+
+
+export const movieSearchHelper = (req) => {
+
+    const {search} = req.query;
+    
+    let where = {
+        isVisible: true
+    };
+
+    if(search){
+        where.title = {[Op.like]: `%${search}%`}
+    }
+
+    return where;
 }
 
 export const staffSortHelper = (req) => {

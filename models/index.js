@@ -25,72 +25,58 @@ Movie.belongsToMany(Genre, { through: "MovieGenres" });
 Genre.belongsToMany(Movie, { through: "MovieGenres" });
 
 //User and favorite one to many
-User.hasMany(Favorite);
-Favorite.belongsTo(User, {
-    foreignKey: "UserId"
+User.hasMany(Favorite, {
+    onDelete: "CASCADE",
 });
+Favorite.belongsTo(User);
 
 //Movie and favorite one to many
-Movie.hasMany(Favorite);
+Movie.hasMany(Favorite, {
+    onDelete: "CASCADE"
+});
 Favorite.belongsTo(Movie, {
     foreignKey: "MovieId"
 });
 
 //Review and user one to many
 User.hasMany(Review, {
-    as: "reviews"
+    onDelete: "CASCADE"
 });
 Review.belongsTo(User, {
-    foreignKey: "UserId"
+    foreignKey: "UserId",
 });
 
 //Review and Movie one to many
 Movie.hasMany(Review, {
-    as: "reviews"
+    onDelete: "CASCADE"
 });
 Review.belongsTo(Movie, {
     foreignKey: "MovieId"
 });
 
 //Staff and admin one to many
-User.hasMany(Staff, {
-    as: "staffs"
-});
+User.hasMany(Staff);
 Staff.belongsTo(User, {
     foreignKey: "UserId"
 });
 
-//Role and admin one to many
-User.hasMany(Role, {
-    as: "roles"
-});
-Role.belongsTo(User, {
-    foreignKey: "UserId"
-});
-
 //Movie and admin one to many
-User.hasMany(Movie, {
-    as: "movies"
-});
+User.hasMany(Movie);
 Movie.belongsTo(User, {
     foreignKey: "UserId"
 });
 
 //Country and admin one to many
-User.hasMany(Country, {
-    as: "countries"
-});
+User.hasMany(Country);
 Country.belongsTo(User, {
-    foreignKey: "UserId"
+    foreignKey: "UserId",
 });
 
 //Genre and admin one to many
-User.hasMany(Genre, {
-    as: "genres"
-});
+User.hasMany(Genre);
 Genre.belongsTo(User, {
     foreignKey: "UserId"
 });
 
 await sequelize.sync();
-export {Staff, Role, Country};
+export {Staff, Role, Country, User, Favorite, Genre, Movie, Review};
